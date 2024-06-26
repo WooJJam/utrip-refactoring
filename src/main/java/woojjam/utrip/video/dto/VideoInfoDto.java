@@ -22,7 +22,7 @@ public class VideoInfoDto {
     private LocalDateTime createdAt;
 
 
-    public static VideoInfoDto from(Video video) {
+    public static VideoInfoDto fromEntity(Video video) {
         return VideoInfoDto.builder()
                 .id(video.getId())
                 .title(video.getTitle())

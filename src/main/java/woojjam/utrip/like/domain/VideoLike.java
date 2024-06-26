@@ -7,7 +7,7 @@ import lombok.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
 public class VideoLike {
@@ -24,8 +24,10 @@ public class VideoLike {
     @JoinColumn(name = "video_id")
     private Video video;
 
-    public VideoLike(Video video, User user) {
-        this.video = video;
-        this.user = user;
+    public static VideoLike from(User user, Video video) {
+        return VideoLike.builder()
+                .user(user)
+                .video(video)
+                .build();
     }
 }

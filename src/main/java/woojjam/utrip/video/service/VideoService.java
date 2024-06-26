@@ -36,14 +36,13 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
     private final VideoLikeRepository videoLikeRepository;
-    private Review jdbcTemplate;
 
     @Transactional(readOnly = true)
     public List<VideoListDto> getAllVideos() {
         List<Video> videos = videoRepository.findAll();
 
         if (videos.isEmpty()) {
-            throw new BaseException(StatusCode.VIDEO_NOT_FOUND);
+            throw new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND);
         }
 
         return videos.stream()
@@ -57,7 +56,7 @@ public class VideoService {
         Page<Video> videos = videoRepository.findByTagsContaining(tag, pageable);
 
         if (videos.isEmpty()) {
-            throw new BaseException(StatusCode.VIDEO_NOT_FOUND);
+            throw new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND);
         }
 
         return videos.stream()
@@ -65,37 +64,22 @@ public class VideoService {
                 .toList();
     }
 
-    public void addTagsToVideo(Long videoId, String tags) {
-        Video video = videoRepository.findById(videoId)
-                .orElseThrow(() -> new BaseException(StatusCode.VIDEO_NOT_FOUND));
-
-        String[] tagArray = tags.split(",");
-        List<String> tagList = Arrays.asList(tagArray);
-
-        video.getTags().clear();
-        video.getTags().addAll(tagList);
-
-        videoRepository.save(video);
-    }
-
     @Transactional(readOnly = true)
     public ResponseEntity<?> getVideoDetailInfo(Long videoId) {
-        Optional<Video> findVideo = videoRepository.findById(videoId);
-        findVideo.orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
-        return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), VideoInfoDto.from(findVideo.get())));
+        Video video = videoRepository.findById(videoId).orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
+        return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), VideoInfoDto.fromEntity(video)));
     }
 
-    public ResponseEntity<?> VideoLike(Long videoId, String email) {
+    public ResponseEntity<?> likeVideo(Long videoId, String email) {
         Video video = findVideoById(videoId);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
 
         boolean alreadyLiked = videoLikeRepository.existsByVideoIdAndUserId(video.getId(), user.getId());
         if (alreadyLiked) {
             return ResponseEntity.badRequest().body(SuccessResponse.of(StatusCode.ALREADY_LIKED.getCode(), StatusCode.ALREADY_LIKED.getMessage()));
         }
 
-        VideoLike videoLike = new VideoLike(video, user);
+        VideoLike videoLike = VideoLike.from(user, video);
         video.getVideoLikes().add(videoLike);
 
         video.setLikecount(video.getLikeCount() + 1);
