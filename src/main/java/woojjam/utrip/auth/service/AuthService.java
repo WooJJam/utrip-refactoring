@@ -37,15 +37,14 @@ public class AuthService {
         if (findUser.isPresent()) {
             throw new UserException(StatusCode.DUPLICATE_EMAIL);
         }
-        User user = new User();
-        user.createUser(nickname,email,password,null);
+        User user = User.of(nickname, email, password, null);
         userRepository.save(user);
         return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
     }
 
     @Transactional(readOnly = true)
     public ResponseEntity<?> checkEmailDuplicate(String email) {
-        if (!userRepository.existsByEmail(email)) {
+        if (Boolean.FALSE.equals(userRepository.existsByEmail(email))) {
             return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
         }
         throw new UserException(StatusCode.DUPLICATE_EMAIL);
@@ -58,7 +57,7 @@ public class AuthService {
             String refreshToken = jwtUtils.generateToken(findUser.get().getEmail(), 1000 * 60 * 60 * 24, "RefreshToken");
             findUser.get().updateRefreshToken(refreshToken);
             userRepository.save(findUser.get());
-            TokenDto tokenDto = new TokenDto(accessToken, refreshToken);
+            TokenDto tokenDto = TokenDto.of(accessToken, refreshToken);
             LoginResponse response = LoginResponse.of(findUser.get(), tokenDto);
             return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
         } else {
@@ -73,7 +72,7 @@ public class AuthService {
                 String accessToken = jwtUtils.generateToken(findUser.get().getEmail(), 1000 * 60 * 60, "AccessToken");
                 String refreshToken = jwtUtils.generateToken(findUser.get().getEmail(), 1000 * 60 * 60 * 24, "RefreshToken");
                 findUser.get().updateRefreshToken(refreshToken);
-                TokenDto tokenDto = new TokenDto(accessToken, refreshToken);
+                TokenDto tokenDto = TokenDto.of(accessToken, refreshToken);
                 return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), tokenDto));
             } else {
                 throw new UserException(StatusCode.USER_NOT_FOUND);
