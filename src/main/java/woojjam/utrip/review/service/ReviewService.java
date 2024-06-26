@@ -33,12 +33,6 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final VideoRepository videoRepository;
-    @Autowired
-    public ReviewService(ReviewRepository reviewRepository, VideoRepository videoRepository, UserRepository userRepository) {
-        this.reviewRepository = reviewRepository;
-        this.videoRepository = videoRepository;
-        this.userRepository = userRepository;
-    }
 
    @Transactional(readOnly = true)
     public ResponseEntity<?> getReviewList(Long videoId, String sort, int page) {
@@ -54,7 +48,7 @@ public class ReviewService {
         }
 
         if (reviews == null || reviews.isEmpty()) {
-            System.out.println("reviews is null or empty");
+            log.error("reviews is null or empty");
             throw new NoSuchElementException(StatusCode.REVIEW_NOT_FOUND);
         }
 
@@ -88,9 +82,7 @@ public class ReviewService {
     private Review findReviewById(Long reviewId) {
         return reviewRepository.findById(reviewId).orElseThrow(() -> new NoSuchElementException(StatusCode.REVIEW_NOT_FOUND));
     }
-    public ResponseEntity<?> patchReview(Long videoId, Long reviewId, String email, SaveReviewDto saveReviewDto) {
-        User user = findUserByEmail(email);
-        Video video = findVideoById(videoId);
+    public ResponseEntity<?> patchReview(Long videoId, Long reviewId, SaveReviewDto saveReviewDto) {
         Review review = findReviewById(reviewId);
 
         if (!review.getVideo().getId().equals(videoId)) {
@@ -98,16 +90,12 @@ public class ReviewService {
         }
 
         review.update(saveReviewDto);
-        reviewRepository.save(review);
 
         return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
     }
 
-    public ResponseEntity<?> deleteReview(Long videoId, Long reviewId, String email) {
-        User user = findUserByEmail(email);
-        Video video = findVideoById(videoId);
+    public ResponseEntity<?> deleteReview(Long videoId, Long reviewId) {
         Review review = findReviewById(reviewId);
-
         if (!review.getVideo().getId().equals(videoId)) {
             throw new NoSuchElementException(StatusCode.REVIEW_NOT_FOUND);
         }
