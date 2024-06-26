@@ -7,6 +7,7 @@ import woojjam.utrip.common.reponse.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.course.domain.CourseDetail;
 import woojjam.utrip.course.domain.UserCourse;
+import woojjam.utrip.course.dto.CourseDetailDto;
 import woojjam.utrip.course.dto.CourseDto;
 import woojjam.utrip.course.dto.CourseListDto;
 import woojjam.utrip.course.dto.PlanDto;
@@ -55,7 +56,6 @@ public class UserService {
         );
 
         List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
-        System.out.println("userCourses = " + userCourses);
         List<CourseDto> courseDto = userCourses.stream()
                 .map(this::convertToCourseDto)
                 .toList();
@@ -66,10 +66,7 @@ public class UserService {
 
     private CourseDto convertToCourseDto(UserCourse userCourse) {
         List<PlanDto> planDto = userCourse.getCourseDetails().stream()
-                .map(courseDetail -> {
-                    System.out.println("courseDetail.getPlaces() = " + courseDetail.getPlaces());
-                    return convertToPlanDto(courseDetail);
-                })
+                .map(this::convertToPlanDto)
                 .sorted(Comparator.comparingInt(PlanDto::getDay))
                 .toList();
 
@@ -130,22 +127,12 @@ public class UserService {
                 double posY = p.getPosY();
                 Optional<Place> findPlaces = placeRepository.findByPxAndPy(posX, posY);
                 if (findPlaces.isEmpty()) {
-                    Place place = Place.builder()
-                            .name(p.getName())
-                            .px(p.getPosX())
-                            .py(p.getPosY())
-                            .img(p.getImg())
-                            .description(p.getDescription())
-                            .build();
+                    Place place = PlaceDto.toEntity(p);
                     return placeRepository.save(place).getId().toString();
                 }
                 return findPlaces.get().getId().toString();
             }).collect(Collectors.joining(","));
-            CourseDetail courseDetail = CourseDetail.builder()
-                    .dayNum(courseList.getDay())
-                    .userCourse(userCourse)
-                    .places(placeIds)
-                    .build();
+            CourseDetail courseDetail = CourseDetailDto.toEntity(placeIds, userCourse, courseList.getDay());
             courseDetailRepository.save(courseDetail);
         });
 

@@ -63,12 +63,12 @@ public class CourseService {
         return courses.stream().map(this::getPlaceId).collect(Collectors.joining(","));
     }
 
-    private String getPlaceId(PlaceDto course) {
-        double posX = course.getPosX();
-        double posY = course.getPosY();
+    private String getPlaceId(PlaceDto placeDto) {
+        double posX = placeDto.getPosX();
+        double posY = placeDto.getPosY();
         Optional<Place> findPlace = placeRepository.findByPxAndPy(posX, posY);
         if (findPlace.isEmpty()) {
-            Place place = PlaceDto.toEntity(course, posX, posY);
+            Place place = PlaceDto.toEntity(placeDto);
             placeRepository.save(place);
             return String.valueOf(place.getId());
         }

@@ -25,13 +25,13 @@ public class PlaceDto {
                 .build();
     }
 
-    public static Place toEntity(PlaceDto course, double posX, double posY) {
+    public static Place toEntity(PlaceDto placeDto) {
         return Place.builder()
-                .name(course.getName())
-                .px(posX)
-                .py(posY)
-                .img(course.getImg())
-                .description(course.getDescription())
+                .name(placeDto.getName())
+                .px(placeDto.getPosX())
+                .py(placeDto.getPosY())
+                .img(placeDto.getImg())
+                .description(placeDto.getDescription())
                 .build();
     }
 }
