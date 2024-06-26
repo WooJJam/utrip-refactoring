@@ -45,11 +45,13 @@ public class User extends BaseEntity {
     @Builder.Default
     private List<UserCourse> userCourses = new ArrayList<>();
 
-    public void createUser(String nickname, String email, String password, String refreshToken) {
-        this.nickname = nickname;
-        this.email = email;
-        this.password = password;
-        this.refreshToken = refreshToken;
+    public static User of(String nickname, String email, String password, String refreshToken) {
+        return User.builder()
+                .nickname(nickname)
+                .email(email)
+                .password(password)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public void updateRefreshToken(String refreshToken) {

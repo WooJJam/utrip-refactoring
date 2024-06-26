@@ -1,9 +1,8 @@
 package woojjam.utrip.auth.service;
 
 import woojjam.utrip.auth.dto.LoginResponse;
-import woojjam.utrip.auth.dto.NaverUserInfoDto;
+import woojjam.utrip.auth.dto.SocialUserInfoDto;
 import woojjam.utrip.auth.dto.TokenDto;
-import woojjam.utrip.auth.dto.KakaoUserInfoDto;
 import woojjam.utrip.common.exception.RuntimeException;
 import woojjam.utrip.common.reponse.StatusCode;
 import woojjam.utrip.common.JwtUtils;
@@ -46,16 +45,15 @@ public class SocialService {
     private final UserRepository userRepository;
 
     public ResponseEntity<?> kakaoLogin(String code) {
-        KakaoUserInfoDto kakaoUserInfo = getKakaoAccessToken(code);
-        User user = new User();
+        SocialUserInfoDto kakaoUserInfo = getKakaoAccessToken(code);
         Optional<User> findUser = userRepository.findByEmail(kakaoUserInfo.getEmail());
-        TokenDto tokenDto = new TokenDto(kakaoUserInfo.getAccessToken(), kakaoUserInfo.getRefreshToken());
+        TokenDto tokenDto = TokenDto.of(kakaoUserInfo.getAccessToken(), kakaoUserInfo.getRefreshToken());
         if (findUser.isPresent()) {
             findUser.get().updateRefreshToken(kakaoUserInfo.getRefreshToken());
             LoginResponse response = LoginResponse.of(findUser.get(), tokenDto);
             return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(),response));
         } else {
-            user.createUser(
+            User user = User.of(
                     kakaoUserInfo.getNickName(),
                     kakaoUserInfo.getEmail(),
                     null,
@@ -68,7 +66,7 @@ public class SocialService {
         }
     }
 
-    private KakaoUserInfoDto getKakaoAccessToken(String code) {
+    private SocialUserInfoDto getKakaoAccessToken(String code) {
         log.info("code = {}", code);
 
         try {
@@ -90,13 +88,12 @@ public class SocialService {
                     kakaoRequest,
                     String.class
             );
-            System.out.println("kakaoToken = " + kakaoToken.getBody());
             log.info("KAKAO TOKEN ={}", kakaoToken);
 
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(kakaoToken.getBody());
 
-            TokenDto tokenDto = new TokenDto(
+            TokenDto tokenDto = TokenDto.of(
                     (String) jsonObject.get("access_token"),
                     (String) jsonObject.get("refresh_token"));
 
@@ -108,7 +105,7 @@ public class SocialService {
     }
 
 
-    private KakaoUserInfoDto getKakaoUserInfo(TokenDto tokenDto) throws ParseException {
+    private SocialUserInfoDto getKakaoUserInfo(TokenDto tokenDto) throws ParseException {
         log.info("KAKAO TOKEN DTO = {}", tokenDto);
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(tokenDto.getAccessToken());
@@ -136,20 +133,19 @@ public class SocialService {
         String refreshToken = jwtUtils.generateToken(email, 1000 * 60 * 60 * 24, "RefreshToken");
         log.info("Nickname = {}, email = {}, accessToken = {}, refreshToken = {}", nickname, email, accessToken, refreshToken);
 
-        return new KakaoUserInfoDto(nickname, email, accessToken, refreshToken);
+        return SocialUserInfoDto.of(nickname, email, accessToken, refreshToken);
     }
 
     public ResponseEntity<?> naverLogin(String code) {
-        NaverUserInfoDto naverUserInfo = getNaverAccessToken(code);
-        User user = new User();
+        SocialUserInfoDto naverUserInfo = getNaverAccessToken(code);
         Optional<User> findUser = userRepository.findByEmail(naverUserInfo.getEmail());
-        TokenDto tokenDto = new TokenDto(naverUserInfo.getAccessToken(), naverUserInfo.getRefreshToken());
+        TokenDto tokenDto = TokenDto.of(naverUserInfo.getAccessToken(), naverUserInfo.getRefreshToken());
         if (findUser.isPresent()) {
-            findUser.get().updateRefreshToken(user.getRefreshToken());
+            findUser.get().updateRefreshToken(naverUserInfo.getRefreshToken());
             LoginResponse response = LoginResponse.of(findUser.get(), tokenDto);
             return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(),response));
         } else {
-            user.createUser(
+            User user = User.of(
                     naverUserInfo.getNickName(),
                     naverUserInfo.getEmail(),
                     null,
@@ -160,7 +156,7 @@ public class SocialService {
         }
     }
 
-    private NaverUserInfoDto getNaverAccessToken(String code) {
+    private SocialUserInfoDto getNaverAccessToken(String code) {
         log.info("NAVER code = {}", code);
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -188,7 +184,7 @@ public class SocialService {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(naverTokenResponse.getBody());
 
-            TokenDto tokenDto = new TokenDto(
+            TokenDto tokenDto = TokenDto.of(
                     (String) jsonObject.get("access_token"),
                     (String) jsonObject.get("refresh_token"));
 
@@ -198,7 +194,7 @@ public class SocialService {
             throw new RuntimeException(StatusCode.INTERNAL_SERVER_ERROR);
         }
     }
-    private NaverUserInfoDto getNaverUserInfo(TokenDto tokenDto) throws ParseException {
+    private SocialUserInfoDto getNaverUserInfo(TokenDto tokenDto) throws ParseException {
         // 로직의 대부분은 유지되지만, NaverUserInfoDto 생성 부분을 수정해야 합니다.
         log.info("NAVER TOKEN DTO = {}", tokenDto);
         HttpHeaders headers = new HttpHeaders();
@@ -227,6 +223,6 @@ public class SocialService {
 
         log.info("Nickname = {}, email = {}, accessToken = {}, refreshToken = {}", nickname, email, accessToken, refreshToken);
 
-        return new NaverUserInfoDto(nickname, email, accessToken, refreshToken);
+        return SocialUserInfoDto.of(nickname, email, accessToken, refreshToken);
     }
 }
