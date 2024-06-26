@@ -8,10 +8,8 @@ import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.course.domain.CourseDetail;
 import woojjam.utrip.course.domain.UserCourse;
 import woojjam.utrip.course.domain.VideoCourse;
+import woojjam.utrip.course.dto.*;
 import woojjam.utrip.place.dto.PlaceDto;
-import woojjam.utrip.course.dto.CourseResponse;
-import woojjam.utrip.course.dto.PlanDto;
-import woojjam.utrip.course.dto.CourseListDto;
 import woojjam.utrip.course.repository.CourseDetailRepository;
 import woojjam.utrip.course.repository.UserCourseRepository;
 import woojjam.utrip.course.repository.VideoCourseRepository;
@@ -54,11 +52,7 @@ public class CourseService {
             int day = course.getDay();
             List<PlaceDto> places = course.getPlace();
             String placesString = generatePlacesString(places);
-            CourseDetail courseDetail = CourseDetail.builder()
-                    .places(placesString)
-                    .userCourse(userCourse)
-                    .dayNum(day)
-                    .build();
+            CourseDetail courseDetail = CourseDetailDto.toEntity(placesString, userCourse, day);
             courseDetailRepository.save(courseDetail);
         });
 
@@ -74,13 +68,7 @@ public class CourseService {
         double posY = course.getPosY();
         Optional<Place> findPlace = placeRepository.findByPxAndPy(posX, posY);
         if (findPlace.isEmpty()) {
-            Place place = Place.builder()
-                    .name(course.getName())
-                    .px(posX)
-                    .py(posY)
-                    .img(course.getImg())
-                    .description(course.getDescription())
-                    .build();
+            Place place = PlaceDto.toEntity(course, posX, posY);
             placeRepository.save(place);
             return String.valueOf(place.getId());
         }
@@ -89,10 +77,7 @@ public class CourseService {
 
     private UserCourse saveUserCourse(User user, String courseName) {
         try {
-            UserCourse userCourse = UserCourse.builder()
-                    .user(user)
-                    .name(courseName)
-                    .build();
+            UserCourse userCourse = UserCourseDto.toEntity(user, courseName);
             return userCourseRepository.save(userCourse);
         } catch (Exception e) {
             throw new RuntimeException(StatusCode.INTERNAL_SERVER_ERROR);
@@ -102,16 +87,16 @@ public class CourseService {
 
     public ResponseEntity<?> getVideoCourse(Long videoId) {
         Optional<VideoCourse> findVideoCourse = videoCourseRepository.findByVideoId(videoId);
-        findVideoCourse.orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
+        VideoCourse videoCourse = findVideoCourse.orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
 
-        List<String> findPlaceIds = List.of(findVideoCourse.get().getPlaces().split(","));
+        List<String> findPlaceIds = List.of(videoCourse.getPlaces().split(","));
 
         AtomicInteger index = new AtomicInteger();
         List<PlaceDto> placeDto = findPlaceIds.stream().map(placeId -> {
             index.getAndIncrement();
             Optional<Place> findPlace = placeRepository.findById(Long.parseLong(placeId));
-            findPlace.orElseThrow(() -> new NoSuchElementException(StatusCode.PLACE_NOT_FOUND));
-            return PlaceDto.of(index.get(), findPlace.get());
+            Place place = findPlace.orElseThrow(() -> new NoSuchElementException(StatusCode.PLACE_NOT_FOUND));
+            return PlaceDto.of(index.get(), place);
         }).toList();
 
         CourseResponse response = CourseResponse.from(placeDto);

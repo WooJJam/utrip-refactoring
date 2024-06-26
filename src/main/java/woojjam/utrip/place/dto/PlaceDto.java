@@ -24,4 +24,14 @@ public class PlaceDto {
                 .posY(place.getPy())
                 .build();
     }
+
+    public static Place toEntity(PlaceDto course, double posX, double posY) {
+        return Place.builder()
+                .name(course.getName())
+                .px(posX)
+                .py(posY)
+                .img(course.getImg())
+                .description(course.getDescription())
+                .build();
+    }
 }
