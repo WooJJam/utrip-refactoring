@@ -15,15 +15,15 @@ public class SuccessResponse<T> {
     private String message;
     private T data;
 
-    public static <T> ResponseEntity<SuccessResponse<T>> of(final String status, final String message) {
+    public static <T> SuccessResponse<T> of(final String status, final String message) {
         return of(status, message, null);
     }
 
-    public static <T> ResponseEntity<SuccessResponse<T>> of (String status, String message, T data) {
-        return ResponseEntity.ok(SuccessResponse.<T>builder()
+    public static <T> SuccessResponse<T> of (String status, String message, T data) {
+        return SuccessResponse.<T>builder()
                 .data(data)
                 .status(status)
                 .message(message)
-                .build());
+                .build();
     }
 }

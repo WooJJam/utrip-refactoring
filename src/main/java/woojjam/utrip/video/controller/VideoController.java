@@ -24,9 +24,9 @@ public class VideoController {
     private final JwtUtils jwtUtils;
 
     @GetMapping
-    public SuccessResponse<List<VideoListDto>> getVideoList() {
+    public ResponseEntity<?> getVideoList() {
         List<VideoListDto> videoList = videoService.getAllVideos();
-        return SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), videoList);
+        return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), videoList));
     }
 
     @GetMapping("/tag/{tag}")

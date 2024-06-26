@@ -7,7 +7,7 @@ class CommonApiResponseTest {
 
     @Test
     public void 공통_응답_생성() throws Exception {
-        ResponseEntity<SuccessResponse<Object>> test = ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), null));
+        ResponseEntity<?> test = ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
         System.out.println("test = " + test);
     }
 

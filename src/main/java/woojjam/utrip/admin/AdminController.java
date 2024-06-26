@@ -20,7 +20,7 @@ public class AdminController {
     }
 
     @PostMapping("/admin/video")
-    public ResponseEntity<SuccessResponse<StatusCode>> saveVideoAndVideoCourse(@RequestBody SaveVideoRequest saveVideoRequest) {
+    public ResponseEntity<?> saveVideoAndVideoCourse(@RequestBody SaveVideoRequest saveVideoRequest) {
         adminService.saveVideoAndVideoCourse(saveVideoRequest);
         return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
     }
