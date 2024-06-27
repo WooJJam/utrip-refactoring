@@ -13,6 +13,9 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
 logging:
+  file:
+    path: /home/ubuntu/
+    name: UTrip.log
   level:
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
