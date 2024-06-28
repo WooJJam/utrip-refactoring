@@ -22,7 +22,8 @@ public class CourseDetail {
     @JoinColumn(name = "user_course_id")
     private UserCourse userCourse;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "place")
     private Place place;
 
     private int dayNum;

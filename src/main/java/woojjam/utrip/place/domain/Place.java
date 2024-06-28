@@ -27,10 +27,4 @@ public class Place {
 
     private double px;
     private double py;
-
-    @OneToOne(mappedBy = "place")
-    private CourseDetail courseDetail;
-
-    @OneToOne(mappedBy = "place")
-    private VideoCourse videoCourse;
 }

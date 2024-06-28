@@ -20,6 +20,7 @@ public class VideoCourse {
     @JoinColumn(name = "video_id")
     private Video video;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "place_id")
     private Place place;
 }
