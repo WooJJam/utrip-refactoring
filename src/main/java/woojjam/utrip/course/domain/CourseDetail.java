@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import woojjam.utrip.place.domain.Place;
 
 @Entity
 @Getter
@@ -21,12 +22,9 @@ public class CourseDetail {
     @JoinColumn(name = "user_course_id")
     private UserCourse userCourse;
 
-    private String places;
-    private int dayNum;
+    @OneToOne(fetch = FetchType.LAZY)
+    private Place place;
 
-    public void updateCourseDetail(UserCourse userCourse, String places, int dayNum) {
-        this.userCourse = userCourse;
-        this.places = places;
-        this.dayNum = dayNum;
-    }
+    private int dayNum;
+    private int placeOrder;
 }

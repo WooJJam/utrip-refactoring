@@ -1,5 +1,6 @@
 package woojjam.utrip.course.domain;
 
+import woojjam.utrip.place.domain.Place;
 import woojjam.utrip.video.domain.Video;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,5 +20,6 @@ public class VideoCourse {
     @JoinColumn(name = "video_id")
     private Video video;
 
-    private String places;
+    @OneToOne(fetch = FetchType.LAZY)
+    private Place place;
 }
