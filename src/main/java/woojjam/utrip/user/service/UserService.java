@@ -50,42 +50,42 @@ public class UserService {
     private final VideoLikeRepository videoLikeRepository;
 
 //    @Transactional(readOnly = true)
-    public ResponseEntity<?> findUserCourse(Long userId) {
-        userRepository.findById(userId).orElseThrow(
-                () -> new UserException(StatusCode.USER_NOT_FOUND)
-        );
+//    public ResponseEntity<?> findUserCourse(Long userId) {
+//        userRepository.findById(userId).orElseThrow(
+//                () -> new UserException(StatusCode.USER_NOT_FOUND)
+//        );
+//
+//        List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
+//        List<CourseDto> courseDto = userCourses.stream()
+//                .map(this::convertToCourseDto)
+//                .toList();
+//
+//        UserCourseResponse response = UserCourseResponse.from(courseDto);
+//        return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
+//    }
 
-        List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
-        List<CourseDto> courseDto = userCourses.stream()
-                .map(this::convertToCourseDto)
-                .toList();
+//    private CourseDto convertToCourseDto(UserCourse userCourse) {
+//        List<PlanDto> planDto = userCourse.getCourseDetails().stream()
+//                .map(this::convertToPlanDto)
+//                .sorted(Comparator.comparingInt(PlanDto::getDay))
+//                .toList();
+//
+//        return CourseDto.of(userCourse.getId(), userCourse.getName(), userCourse.getCreatedAt(), userCourse.getUpdatedAt(), planDto);
+//    }
 
-        UserCourseResponse response = UserCourseResponse.from(courseDto);
-        return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
-    }
-
-    private CourseDto convertToCourseDto(UserCourse userCourse) {
-        List<PlanDto> planDto = userCourse.getCourseDetails().stream()
-                .map(this::convertToPlanDto)
-                .sorted(Comparator.comparingInt(PlanDto::getDay))
-                .toList();
-
-        return CourseDto.of(userCourse.getId(), userCourse.getName(), userCourse.getCreatedAt(), userCourse.getUpdatedAt(), planDto);
-    }
-
-    private PlanDto convertToPlanDto(CourseDetail courseDetail) {
-        List<Long> placeIds = Arrays.stream(courseDetail.getPlaces().split(","))
-                .map(Long::parseLong)
-                .toList();
-
-        AtomicInteger index = new AtomicInteger();
-        List<PlaceDto> placeDto = placeIds.stream().map(placeId -> {
-            Place place = placeRepository.findById(placeId).orElseThrow(() -> new NoSuchElementException(StatusCode.PLACE_NOT_FOUND));
-            return PlaceDto.of(index.incrementAndGet(), place);
-        }).toList();
-
-        return PlanDto.of(courseDetail.getDayNum(), placeDto);
-    }
+//    private PlanDto convertToPlanDto(CourseDetail courseDetail) {
+//        List<Long> placeIds = Arrays.stream(courseDetail.getPlaces().split(","))
+//                .map(Long::parseLong)
+//                .toList();
+//
+//        AtomicInteger index = new AtomicInteger();
+//        List<PlaceDto> placeDto = placeIds.stream().map(placeId -> {
+//            Place place = placeRepository.findById(placeId).orElseThrow(() -> new NoSuchElementException(StatusCode.PLACE_NOT_FOUND));
+//            return PlaceDto.of(index.incrementAndGet(), place);
+//        }).toList();
+//
+//        return PlanDto.of(courseDetail.getDayNum(), placeDto);
+//    }
 
     @Transactional(readOnly = true)
     public ResponseEntity<?> getUserLikeVideo(Long userId) {
@@ -132,8 +132,8 @@ public class UserService {
                 }
                 return findPlaces.get().getId().toString();
             }).collect(Collectors.joining(","));
-            CourseDetail courseDetail = CourseDetailDto.toEntity(placeIds, userCourse, courseList.getDay());
-            courseDetailRepository.save(courseDetail);
+//            CourseDetail courseDetail = CourseDetailDto.toEntity(placeIds, userCourse, courseList.getDay());
+//            courseDetailRepository.save(courseDetail);
         });
 
         log.info("After Course Detail Update Query");

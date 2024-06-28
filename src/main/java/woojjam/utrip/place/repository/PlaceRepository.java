@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     Optional<Place> findByPxAndPy(double posX, double posY);
+
     List<Place> findByIdIn(List<Long> ids);
 }

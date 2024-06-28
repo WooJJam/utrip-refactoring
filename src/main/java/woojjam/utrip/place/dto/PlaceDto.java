@@ -14,9 +14,9 @@ public class PlaceDto {
     private double posX;
     private double posY;
 
-    public static PlaceDto of(int index, Place place) {
+    public static PlaceDto of(int order, Place place) {
         return PlaceDto.builder()
-                .index(index)
+                .index(order)
                 .name(place.getName())
                 .description(place.getDescription())
                 .img(place.getImg())

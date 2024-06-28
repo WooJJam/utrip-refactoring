@@ -57,8 +57,8 @@ public class AdminService {
         }).collect(Collectors.joining(","));
 
         VideoCourse videoCourse = VideoCourse.builder()
-                .video(video)
-                .places(placeIds).build();
+                .video(video).build();
+//                .places(placeIds).build();
 
         videoCourseRepository.save(videoCourse);
     }

@@ -50,29 +50,21 @@ public class CourseService {
         List<PlanDto> courses = courseListDto.getPlan();
         courses.forEach(course -> {
             int day = course.getDay();
-            List<PlaceDto> places = course.getPlace();
-            String placesString = generatePlacesString(places);
-            CourseDetail courseDetail = CourseDetailDto.toEntity(placesString, userCourse, day);
-            courseDetailRepository.save(courseDetail);
+            course.getPlace().forEach(p -> {
+                Optional<Place> findPlace = placeRepository.findByPxAndPy(p.getPosX(), p.getPosY());
+                if (findPlace.isEmpty()) {
+                    Place place = placeRepository.save(PlaceDto.toEntity(p));
+                    CourseDetail courseDetail = CourseDetailDto.toEntity(place, userCourse, p.getIndex(), day);
+                    courseDetailRepository.save(courseDetail);
+                } else {
+                    Place place = findPlace.get();
+                    CourseDetail courseDetail = CourseDetailDto.toEntity(place, userCourse, p.getIndex(), day);
+                    courseDetailRepository.save(courseDetail);
+                }
+            });
         });
 
         return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
-    }
-
-    private String generatePlacesString(List<PlaceDto> courses) {
-        return courses.stream().map(this::getPlaceId).collect(Collectors.joining(","));
-    }
-
-    private String getPlaceId(PlaceDto placeDto) {
-        double posX = placeDto.getPosX();
-        double posY = placeDto.getPosY();
-        Optional<Place> findPlace = placeRepository.findByPxAndPy(posX, posY);
-        if (findPlace.isEmpty()) {
-            Place place = PlaceDto.toEntity(placeDto);
-            placeRepository.save(place);
-            return String.valueOf(place.getId());
-        }
-        return String.valueOf(findPlace.get().getId());
     }
 
     private UserCourse saveUserCourse(User user, String courseName) {
@@ -89,17 +81,18 @@ public class CourseService {
         Optional<VideoCourse> findVideoCourse = videoCourseRepository.findByVideoId(videoId);
         VideoCourse videoCourse = findVideoCourse.orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
 
-        List<String> findPlaceIds = List.of(videoCourse.getPlaces().split(","));
+//        List<String> findPlaceIds = List.of(videoCourse.getPlaces().split(","));
 
         AtomicInteger index = new AtomicInteger();
-        List<PlaceDto> placeDto = findPlaceIds.stream().map(placeId -> {
-            index.getAndIncrement();
-            Optional<Place> findPlace = placeRepository.findById(Long.parseLong(placeId));
-            Place place = findPlace.orElseThrow(() -> new NoSuchElementException(StatusCode.PLACE_NOT_FOUND));
-            return PlaceDto.of(index.get(), place);
-        }).toList();
+//        List<PlaceDto> placeDto = findPlaceIds.stream().map(placeId -> {
+//            index.getAndIncrement();
+//            Optional<Place> findPlace = placeRepository.findById(Long.parseLong(placeId));
+//            Place place = findPlace.orElseThrow(() -> new NoSuchElementException(StatusCode.PLACE_NOT_FOUND));
+//            return PlaceDto.of(index.get(), place);
+//        }).toList();
 
-        CourseResponse response = CourseResponse.from(placeDto);
+//        CourseResponse response = CourseResponse.from(placeDto);
+        String response = "TEST";
         return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
     }
 }
