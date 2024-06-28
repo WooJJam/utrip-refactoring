@@ -1,7 +1,5 @@
 package woojjam.utrip.admin;
 
-import woojjam.utrip.course.domain.VideoCourse;
-import woojjam.utrip.course.repository.VideoCourseRepository;
 import woojjam.utrip.like.repository.VideoLikeRepository;
 import woojjam.utrip.place.domain.Place;
 import woojjam.utrip.place.repository.PlaceRepository;
@@ -26,7 +24,6 @@ public class AdminService {
     private final VideoRepository videoRepository;
     private final PlaceRepository placeRepository;
     private final VideoLikeRepository videoLikeRepository;
-    private final VideoCourseRepository videoCourseRepository;
 
     public void saveVideoAndVideoCourse(SaveVideoRequest saveVideoRequest) {
 
@@ -56,16 +53,15 @@ public class AdminService {
             }
         }).collect(Collectors.joining(","));
 
-        VideoCourse videoCourse = VideoCourse.builder()
-                .video(video).build();
+//        VideoCourse videoCourse = VideoCourse.builder()
+//                .video(video).build();
 //                .places(placeIds).build();
 
-        videoCourseRepository.save(videoCourse);
+//        videoCourseRepository.save(videoCourse);
     }
 
     public void deleteVideo(Long videoId) {
         reviewRepository.deleteByVideoId(videoId);
-        videoCourseRepository.deleteByVideoId(videoId);
         videoLikeRepository.deleteByVideoId(videoId);
         videoRepository.deleteById(videoId);
     }

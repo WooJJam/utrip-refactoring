@@ -9,9 +9,9 @@ import java.util.List;
 @Data
 @Builder
 public class CourseResponse {
-    private List<PlaceDto> course;
+    private PlaceDto course;
 
-    public static CourseResponse from(List<PlaceDto> placeDto) {
+    public static CourseResponse from(PlaceDto placeDto) {
         return CourseResponse.builder()
                 .course(placeDto)
                 .build();

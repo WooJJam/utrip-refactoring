@@ -7,12 +7,10 @@ import woojjam.utrip.common.reponse.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.course.domain.CourseDetail;
 import woojjam.utrip.course.domain.UserCourse;
-import woojjam.utrip.course.domain.VideoCourse;
 import woojjam.utrip.course.dto.*;
 import woojjam.utrip.place.dto.PlaceDto;
 import woojjam.utrip.course.repository.CourseDetailRepository;
 import woojjam.utrip.course.repository.UserCourseRepository;
-import woojjam.utrip.course.repository.VideoCourseRepository;
 import woojjam.utrip.place.domain.Place;
 import woojjam.utrip.place.repository.PlaceRepository;
 import woojjam.utrip.user.domain.User;
@@ -22,11 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import woojjam.utrip.video.domain.Video;
+import woojjam.utrip.video.repository.VideoRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -37,7 +34,7 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     private final UserCourseRepository userCourseRepository;
-    private final VideoCourseRepository videoCourseRepository;
+    private final VideoRepository videoRepository;
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
     private final CourseDetailRepository courseDetailRepository;
@@ -92,21 +89,14 @@ public class CourseService {
 
 
     public ResponseEntity<?> getVideoCourse(Long videoId) {
-        Optional<VideoCourse> findVideoCourse = videoCourseRepository.findByVideoId(videoId);
-        VideoCourse videoCourse = findVideoCourse.orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
 
-//        List<String> findPlaceIds = List.of(videoCourse.getPlaces().split(","));
+        Video videoCourse = videoRepository.findById(videoId).orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
+        Place place = videoCourse.getPlace();
 
-        AtomicInteger index = new AtomicInteger();
-//        List<PlaceDto> placeDto = findPlaceIds.stream().map(placeId -> {
-//            index.getAndIncrement();
-//            Optional<Place> findPlace = placeRepository.findById(Long.parseLong(placeId));
-//            Place place = findPlace.orElseThrow(() -> new NoSuchElementException(StatusCode.PLACE_NOT_FOUND));
-//            return PlaceDto.of(index.get(), place);
-//        }).toList();
+        PlaceDto placeDto = PlaceDto.from(place);
 
-//        CourseResponse response = CourseResponse.from(placeDto);
-        String response = "TEST";
+        CourseResponse response = CourseResponse.from(placeDto);
+
         return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
     }
 }
