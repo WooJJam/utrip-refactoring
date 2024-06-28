@@ -23,7 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -48,19 +50,31 @@ public class CourseService {
         UserCourse userCourse = saveUserCourse(user, courseName);
 
         List<PlanDto> courses = courseListDto.getPlan();
+        List<Double> posXs = new ArrayList<>();
+        List<Double> posYs = new ArrayList<>();
+
+        courses.forEach(course -> course.getPlace().forEach(p -> {
+            posXs.add(p.getPosX());
+            posYs.add(p.getPosY());
+        }));
+
+        List<Place> findPlaces = placeRepository.findByPxInAndPyIn(posXs, posYs);
+        Map<String, Place> placeMap = findPlaces.stream()
+                .collect(Collectors.toMap(p -> p.getPx() + "," + p.getPy(), p -> p));
+
         courses.forEach(course -> {
             int day = course.getDay();
             course.getPlace().forEach(p -> {
-                Optional<Place> findPlace = placeRepository.findByPxAndPy(p.getPosX(), p.getPosY());
-                if (findPlace.isEmpty()) {
-                    Place place = placeRepository.save(PlaceDto.toEntity(p));
-                    CourseDetail courseDetail = CourseDetailDto.toEntity(place, userCourse, p.getIndex(), day);
-                    courseDetailRepository.save(courseDetail);
-                } else {
-                    Place place = findPlace.get();
-                    CourseDetail courseDetail = CourseDetailDto.toEntity(place, userCourse, p.getIndex(), day);
-                    courseDetailRepository.save(courseDetail);
+                String key = p.getPosX() + "," + p.getPosY();
+                Place place = placeMap.get(key);
+
+                if (place == null) {
+                    place = placeRepository.save(PlaceDto.toEntity(p));
+                    placeMap.put(key, place);
                 }
+
+                CourseDetail courseDetail = CourseDetailDto.toEntity(place, userCourse, p.getIndex(), day);
+                courseDetailRepository.save(courseDetail);
             });
         });
 
