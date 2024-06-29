@@ -7,7 +7,9 @@ import woojjam.utrip.common.reponse.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.course.domain.CourseDetail;
 import woojjam.utrip.course.domain.UserCourse;
+import woojjam.utrip.course.domain.UserCourseDay;
 import woojjam.utrip.course.dto.*;
+import woojjam.utrip.course.repository.UserCourseDayRepository;
 import woojjam.utrip.place.dto.PlaceDto;
 import woojjam.utrip.course.repository.CourseDetailRepository;
 import woojjam.utrip.course.repository.UserCourseRepository;
@@ -37,6 +39,7 @@ public class CourseService {
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
+    private final UserCourseDayRepository userCourseDayRepository;
     private final CourseDetailRepository courseDetailRepository;
 
     public ResponseEntity<?> postUserCourse(CourseListDto courseListDto, String email) {
@@ -60,7 +63,11 @@ public class CourseService {
                 .collect(Collectors.toMap(p -> p.getPx() + "," + p.getPy(), p -> p));
 
         courses.forEach(course -> {
+
             int day = course.getDay();
+            UserCourseDay userCourseDay = UserCourseDayDto.toEntity(day, userCourse);
+            userCourseDayRepository.save(userCourseDay);
+
             course.getPlace().forEach(p -> {
                 String key = p.getPosX() + "," + p.getPosY();
                 Place place = placeMap.get(key);
@@ -70,7 +77,8 @@ public class CourseService {
                     placeMap.put(key, place);
                 }
 
-                CourseDetail courseDetail = CourseDetailDto.toEntity(place, userCourse, p.getIndex(), day);
+
+                CourseDetail courseDetail = CourseDetailDto.toEntity(place, userCourseDay, p.getIndex());
                 courseDetailRepository.save(courseDetail);
             });
         });

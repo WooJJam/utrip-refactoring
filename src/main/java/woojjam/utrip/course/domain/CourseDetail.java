@@ -19,13 +19,12 @@ public class CourseDetail {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_course_id")
-    private UserCourse userCourse;
+    @JoinColumn(name = "user_course_day_id")
+    private UserCourseDay userCourseDay;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place")
     private Place place;
 
-    private int dayNum;
     private int placeOrder;
 }

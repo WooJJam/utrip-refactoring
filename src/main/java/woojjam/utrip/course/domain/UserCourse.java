@@ -26,7 +26,7 @@ public class UserCourse extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "userCourse")
-    private List<CourseDetail> courseDetails = new ArrayList<>();
+    private List<UserCourseDay> userCourseDays = new ArrayList<>();
 
     private String name;
 

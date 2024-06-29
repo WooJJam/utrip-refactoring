@@ -9,8 +9,8 @@ import java.util.List;
 @Repository
 public interface CourseDetailRepository extends JpaRepository<CourseDetail, Long> {
 
-    List<CourseDetail> findByUserCourseIdIn(List<Long> id);
-    List<CourseDetail> findByUserCourseId(Long userCourseId);
+//    List<CourseDetail> findByUserCourseIdIn(List<Long> id);
+//    List<CourseDetail> findByUserCourseId(Long userCourseId);
 
-    void deleteAllByUserCourseId(Long userCourseId);
+//    void deleteAllByUserCourseId(Long userCourseId);
 }
