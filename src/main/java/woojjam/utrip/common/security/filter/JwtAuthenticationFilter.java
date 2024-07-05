@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,44 +45,72 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String token = jwtProvider.resolveToken(request.getHeader(HttpHeaders.AUTHORIZATION));
 
-		if (isValidToken(response, token)) {
+		if (!isValidToken(response, token)) {
 			return;
 		}
 
-		String email = jwtProvider.getClaims(token).get("email", String.class);
+		String email = getTokenClaims(token);
 		log.debug("email : {}", email);
 
-		UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-		Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null);
-		SecurityContextHolder.getContext().setAuthentication(auth);
+		UserDetails userDetails = getUserDetails(email);
+		log.debug("userDetails : {}", userDetails);
+
+		authenticate(userDetails);
+
 		filterChain.doFilter(request, response);
 	}
 
-	/*
-	 * 만약 아무런 토큰이 없다면 익명 사용자
+	/**
+	 * Token이 비어있다면 익명 사용자
+	 * @param request
+	 * @param response
+	 * @return Boolean
+	 * @throws ServletException
 	 */
-	private boolean isAnonymous(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	private boolean isAnonymous(HttpServletRequest request, HttpServletResponse response) {
 		String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
 		return accessToken == null;
 	}
 
+	/**
+	 * 토큰 정보가 유효한지 검사
+	 * @param response
+	 * @param token
+	 * @return boolean
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	private boolean isValidToken(HttpServletResponse response, String token) throws
 		ServletException,
 		IOException {
 
 		if (!StringUtils.hasText(token)) {
 			handleException(response, StatusCode.TOKEN_IS_NULL);
-			return true;
+			return false;
 		}
 
 		if (jwtProvider.isTokenExpired(token)) {
 			handleException(response, StatusCode.TOKEN_EXPIRED);
-			return true;
+			return false;
 		}
 
-		return false;
+		return true;
 
+	}
+
+	private String getTokenClaims(String token) {
+		Claims claims = jwtProvider.getClaims(token);
+		return claims.get("email", String.class);
+	}
+
+	private UserDetails getUserDetails(String email) {
+		return userDetailsService.loadUserByUsername(email);
+	}
+
+	private void authenticate(UserDetails userDetails) {
+		Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null);
+		SecurityContextHolder.getContext().setAuthentication(auth);
 	}
 
 	private void handleException(HttpServletResponse response, StatusCode error) {
