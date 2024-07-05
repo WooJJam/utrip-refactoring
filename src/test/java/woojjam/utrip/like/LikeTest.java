@@ -7,11 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import woojjam.utrip.like.domain.ReviewLike;
-import woojjam.utrip.like.domain.VideoLike;
-import woojjam.utrip.review.domain.Review;
-import woojjam.utrip.user.domain.User;
-import woojjam.utrip.video.domain.Video;
+import woojjam.utrip.domains.like.domain.ReviewLike;
+import woojjam.utrip.domains.like.domain.VideoLike;
+import woojjam.utrip.domains.review.domain.Review;
+import woojjam.utrip.domains.user.domain.User;
+import woojjam.utrip.domains.video.domain.Video;
 
 @SpringBootTest
 @Transactional

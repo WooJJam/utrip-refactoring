@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import woojjam.utrip.video.domain.Video;
-import woojjam.utrip.video.repository.VideoRepository;
+import woojjam.utrip.domains.video.domain.Video;
+import woojjam.utrip.domains.video.repository.VideoRepository;
 
 @SpringBootTest
 @Transactional

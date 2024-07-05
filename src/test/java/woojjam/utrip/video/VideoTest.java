@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import woojjam.utrip.video.domain.Video;
+import woojjam.utrip.domains.video.domain.Video;
 
 @SpringBootTest
 @Transactional
