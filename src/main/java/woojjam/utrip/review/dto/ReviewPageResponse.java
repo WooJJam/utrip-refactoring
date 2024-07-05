@@ -1,23 +1,23 @@
 package woojjam.utrip.review.dto;
 
-import woojjam.utrip.common.dto.BasePageDto;
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-
-import java.util.List;
+import woojjam.utrip.common.dto.BasePageDto;
 
 @Data
 @Getter
 @Builder
 public class ReviewPageResponse<T> {
-    private List<T> content;
-    private BasePageDto<T> pageInfo;
+	private List<T> content;
+	private BasePageDto<T> pageInfo;
 
-    public static <T> ReviewPageResponse<T> of(List<T> content, BasePageDto<T> pageInfo) {
-        return ReviewPageResponse.<T>builder()
-                .content(content)
-                .pageInfo(pageInfo)
-                .build();
-    }
+	public static <T> ReviewPageResponse<T> of(List<T> content, BasePageDto<T> pageInfo) {
+		return ReviewPageResponse.<T>builder()
+			.content(content)
+			.pageInfo(pageInfo)
+			.build();
+	}
 }

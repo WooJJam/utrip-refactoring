@@ -1,6 +1,10 @@
 package woojjam.utrip.course.dto;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import woojjam.utrip.course.domain.CourseDetail;
 import woojjam.utrip.course.domain.UserCourse;
 import woojjam.utrip.course.domain.UserCourseDay;
@@ -12,16 +16,16 @@ import woojjam.utrip.place.domain.Place;
 @Builder
 public class CourseDetailDto {
 
-    private Place place;
-    private UserCourse userCourse;
-    private int placeOrder;
-    private int dayNum;
+	private Place place;
+	private UserCourse userCourse;
+	private int placeOrder;
+	private int dayNum;
 
-    public static CourseDetail toEntity(Place place, UserCourseDay userCourseDay, int order) {
-        return CourseDetail.builder()
-                .place(place)
-                .userCourseDay(userCourseDay)
-                .placeOrder(order)
-                .build();
-    }
+	public static CourseDetail toEntity(Place place, UserCourseDay userCourseDay, int order) {
+		return CourseDetail.builder()
+			.place(place)
+			.userCourseDay(userCourseDay)
+			.placeOrder(order)
+			.build();
+	}
 }

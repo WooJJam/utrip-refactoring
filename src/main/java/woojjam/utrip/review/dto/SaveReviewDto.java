@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class SaveReviewDto {
-    private String title;
-    private String nickname;
-    private String content;
-    private int score;
+	private String title;
+	private String nickname;
+	private String content;
+	private int score;
 }

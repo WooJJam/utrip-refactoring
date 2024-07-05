@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class LocalLoginRequest {
 
-    private String email;
-    private String password;
+	private String email;
+	private String password;
 }

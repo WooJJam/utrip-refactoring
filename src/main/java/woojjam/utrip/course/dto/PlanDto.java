@@ -1,22 +1,22 @@
 package woojjam.utrip.course.dto;
 
-import woojjam.utrip.place.dto.PlaceDto;
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import woojjam.utrip.place.dto.PlaceDto;
 
 @Data
 @Builder
 public class PlanDto {
 
-    private int day;
-    private List<PlaceDto> place;
+	private int day;
+	private List<PlaceDto> place;
 
-    public static PlanDto of(int day, List<PlaceDto> place) {
-        return PlanDto.builder()
-                .day(day)
-                .place(place)
-                .build();
-    }
+	public static PlanDto of(int day, List<PlaceDto> place) {
+		return PlanDto.builder()
+			.day(day)
+			.place(place)
+			.build();
+	}
 }

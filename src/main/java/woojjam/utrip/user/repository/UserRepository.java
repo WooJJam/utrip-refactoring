@@ -1,20 +1,21 @@
 package woojjam.utrip.user.repository;
 
-import woojjam.utrip.user.domain.User;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import woojjam.utrip.user.domain.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Boolean existsByEmail(String email);
+	Boolean existsByEmail(String email);
 
-    Optional<User> findByEmailAndPassword(String email, String password);
+	Optional<User> findByEmailAndPassword(String email, String password);
 
-    Optional<User> findByRefreshToken(String refreshToken);
+	Optional<User> findByRefreshToken(String refreshToken);
 
-    Optional<User> findByEmail(String email);
+	Optional<User> findByEmail(String email);
 
 }

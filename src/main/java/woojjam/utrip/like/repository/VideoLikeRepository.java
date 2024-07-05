@@ -1,17 +1,20 @@
 package woojjam.utrip.like.repository;
 
-import woojjam.utrip.like.domain.VideoLike;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import woojjam.utrip.like.domain.VideoLike;
 
 @Repository
 public interface VideoLikeRepository extends JpaRepository<VideoLike, Long> {
-    boolean existsByVideoIdAndUserId(Long videoId, Long userId);
-    List<VideoLike> findByUserId(Long userId);
+	boolean existsByVideoIdAndUserId(Long videoId, Long userId);
 
-    void deleteByUserIdAndVideoId(Long userId, Long videoId);
-    void deleteByVideoId(Long videoId);
+	List<VideoLike> findByUserId(Long userId);
+
+	void deleteByUserIdAndVideoId(Long userId, Long videoId);
+
+	void deleteByVideoId(Long videoId);
 
 }

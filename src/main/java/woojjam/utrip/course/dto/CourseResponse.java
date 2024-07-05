@@ -1,19 +1,17 @@
 package woojjam.utrip.course.dto;
 
-import woojjam.utrip.place.dto.PlaceDto;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import woojjam.utrip.place.dto.PlaceDto;
 
 @Data
 @Builder
 public class CourseResponse {
-    private PlaceDto course;
+	private PlaceDto course;
 
-    public static CourseResponse from(PlaceDto placeDto) {
-        return CourseResponse.builder()
-                .course(placeDto)
-                .build();
-    }
+	public static CourseResponse from(PlaceDto placeDto) {
+		return CourseResponse.builder()
+			.course(placeDto)
+			.build();
+	}
 }
