@@ -1,5 +1,7 @@
-package woojjam.utrip.common;
+package woojjam.utrip.common.security.jwt;
 
+import java.time.Duration;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +9,7 @@ import java.util.Map;
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -20,42 +23,51 @@ import woojjam.utrip.common.reponse.StatusCode;
 
 @Slf4j
 @Component
-public class JwtUtils {
+@Primary
+public class AccessTokenProvider implements JwtProvider {
 
-	@Value("${JWT.SECRET.KEY}")
-	private String key;
+	private final SecretKey secretKey;
+	private final Duration accessTokenExpiration;
 
-	public String generateToken(String email, int expireTime, String tokenName) {
+	public AccessTokenProvider(
+		@Value("${jwt.secret.access-token}") String secretKey,
+		@Value("${jwt.expiration-time.access-token}") Duration accessTokenExpiration) {
+		this.secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+		this.accessTokenExpiration = accessTokenExpiration;
+	}
+
+	@Override
+	public String generateToken(String email) {
+		Date now = new Date();
 		return Jwts.builder()
 			.claims(createClaims(email))
-			.expiration(createExpireDate(expireTime))
-			.signWith(createSigningKey())
+			.expiration(createExpireDate(now, accessTokenExpiration.toMillis()))
+			.signWith(secretKey)
 			.compact();
 	}
 
-	private Map<String, Object> createClaims(String email) {
+	@Override
+	public Map<String, Object> createClaims(String email) {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("email", email);
 		return claims;
 	}
 
-	private static Date createExpireDate(long expireTime) {
-		long curTime = System.currentTimeMillis();
-		return new Date(curTime + expireTime);
+	@Override
+	public Date createExpireDate(Date date, Long expirationTime) {
+		return new Date(date.getTime() + expirationTime);
 	}
 
-	private SecretKey createSigningKey() {
-		byte[] secret = key.getBytes();
-		return Keys.hmacShaKeyFor(secret);
-	}
-
+	@Override
 	public Claims getClaims(String token) {
 		return Jwts.parser()
-			.verifyWith(createSigningKey())
+			.verifyWith(secretKey)
 			.build()
-			.parseSignedClaims(token).getPayload();
+			.parseSignedClaims(token)
+			.getPayload();
 	}
 
+	@Override
 	public boolean isValidToken(String token) {
 		try {
 			getClaims(token);
@@ -68,14 +80,6 @@ public class JwtUtils {
 			throw new TokenException(StatusCode.TOKEN_IS_TAMPERED);
 		} catch (NullPointerException exception) {
 			log.error("Token is Null");
-			throw new TokenException(StatusCode.TOKEN_IS_NULL);
-		}
-	}
-
-	public String splitBearerToken(String bearerToken) {
-		try {
-			return bearerToken.split(" ")[1];
-		} catch (NullPointerException e) {
 			throw new TokenException(StatusCode.TOKEN_IS_NULL);
 		}
 	}
