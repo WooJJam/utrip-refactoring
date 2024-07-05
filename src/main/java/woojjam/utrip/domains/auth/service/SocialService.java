@@ -65,7 +65,8 @@ public class SocialService {
 				kakaoUserInfo.getNickName(),
 				kakaoUserInfo.getEmail(),
 				null,
-				kakaoUserInfo.getRefreshToken()
+				kakaoUserInfo.getRefreshToken(),
+				"ROLE_USER"
 			);
 			userRepository.save(user);
 
@@ -159,7 +160,8 @@ public class SocialService {
 				naverUserInfo.getNickName(),
 				naverUserInfo.getEmail(),
 				null,
-				naverUserInfo.getRefreshToken()
+				naverUserInfo.getRefreshToken(),
+				"ROLE_USER"
 			);
 			LoginResponse response = LoginResponse.of(user, tokenDto);
 			return ResponseEntity.ok(

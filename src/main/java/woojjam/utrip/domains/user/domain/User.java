@@ -33,6 +33,7 @@ public class User extends BaseEntity {
 	private String email;
 	private String password;
 	private String refreshToken;
+	private String role;
 
 	@OneToMany(mappedBy = "user")
 	@Builder.Default
@@ -50,12 +51,13 @@ public class User extends BaseEntity {
 	@Builder.Default
 	private List<UserCourse> userCourses = new ArrayList<>();
 
-	public static User of(String nickname, String email, String password, String refreshToken) {
+	public static User of(String nickname, String email, String password, String refreshToken, String role) {
 		return User.builder()
 			.nickname(nickname)
 			.email(email)
 			.password(password)
 			.refreshToken(refreshToken)
+			.role(role)
 			.build();
 	}
 

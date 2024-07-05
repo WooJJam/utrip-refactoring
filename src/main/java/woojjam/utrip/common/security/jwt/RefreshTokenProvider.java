@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -66,19 +64,16 @@ public class RefreshTokenProvider implements JwtProvider {
 	}
 
 	@Override
-	public boolean isValidToken(String token) {
+	public boolean isTokenExpired(String token) {
 		try {
-			getClaims(token);
-			return true;
-		} catch (ExpiredJwtException exception) {
-			log.error("token Expired");
-			throw new TokenException(StatusCode.TOKEN_EXPIRED);
-		} catch (JwtException exception) {
-			log.error("Token Tampered");
-			throw new TokenException(StatusCode.TOKEN_IS_TAMPERED);
-		} catch (NullPointerException exception) {
-			log.error("Token is Null");
-			throw new TokenException(StatusCode.TOKEN_IS_NULL);
+			Claims claims = getClaims(token);
+			return claims.getExpiration().before(new Date());
+		} catch (TokenException e) {
+			if (StatusCode.TOKEN_EXPIRED.getCode().equals(e.getStatus())) {
+				return true;
+			}
+			throw e;
 		}
 	}
+
 }

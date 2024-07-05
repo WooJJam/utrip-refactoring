@@ -36,11 +36,12 @@ public class AuthService {
 		String nickname = registerRequest.getNickname();
 		String email = registerRequest.getEmail();
 		String password = registerRequest.getPassword();
+		String role = registerRequest.getRole();
 		Optional<User> findUser = userRepository.findByEmail(email);
 		if (findUser.isPresent()) {
 			throw new UserException(StatusCode.DUPLICATE_EMAIL);
 		}
-		User user = User.of(nickname, email, password, null);
+		User user = User.of(nickname, email, password, null, role);
 		userRepository.save(user);
 		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
 	}

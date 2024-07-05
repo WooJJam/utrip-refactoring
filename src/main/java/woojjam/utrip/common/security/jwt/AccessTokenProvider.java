@@ -1,7 +1,6 @@
 package woojjam.utrip.common.security.jwt;
 
 import java.time.Duration;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -32,7 +30,7 @@ public class AccessTokenProvider implements JwtProvider {
 	public AccessTokenProvider(
 		@Value("${jwt.secret.access-token}") String secretKey,
 		@Value("${jwt.expiration-time.access-token}") Duration accessTokenExpiration) {
-		this.secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
+		this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
 		this.accessTokenExpiration = accessTokenExpiration;
 	}
 
@@ -60,27 +58,28 @@ public class AccessTokenProvider implements JwtProvider {
 
 	@Override
 	public Claims getClaims(String token) {
-		return Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload();
+		try {
+			return Jwts.parser()
+				.verifyWith(secretKey)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload();
+		} catch (JwtException e) {
+			log.warn(e.getMessage());
+			throw new TokenException(StatusCode.TOKEN_EXPIRED);
+		}
 	}
 
 	@Override
-	public boolean isValidToken(String token) {
+	public boolean isTokenExpired(String token) {
 		try {
-			getClaims(token);
-			return true;
-		} catch (ExpiredJwtException exception) {
-			log.error("token Expired");
-			throw new TokenException(StatusCode.TOKEN_EXPIRED);
-		} catch (JwtException exception) {
-			log.error("Token Tampered");
-			throw new TokenException(StatusCode.TOKEN_IS_TAMPERED);
-		} catch (NullPointerException exception) {
-			log.error("Token is Null");
-			throw new TokenException(StatusCode.TOKEN_IS_NULL);
+			Claims claims = getClaims(token);
+			return claims.getExpiration().before(new Date());
+		} catch (TokenException e) {
+			if (StatusCode.TOKEN_EXPIRED.getCode().equals(e.getStatus())) {
+				return true;
+			}
+			throw e;
 		}
 	}
 }

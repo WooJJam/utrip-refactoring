@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.domains.course.dto.UserCourseDetailDto;
 import woojjam.utrip.common.exception.NoSuchElementException;
 import woojjam.utrip.common.exception.RuntimeException;
 import woojjam.utrip.common.exception.UserException;
@@ -23,6 +22,7 @@ import woojjam.utrip.domains.course.domain.UserCourse;
 import woojjam.utrip.domains.course.dto.CourseDto;
 import woojjam.utrip.domains.course.dto.CourseListDto;
 import woojjam.utrip.domains.course.dto.PlanDto;
+import woojjam.utrip.domains.course.dto.UserCourseDetailDto;
 import woojjam.utrip.domains.course.repository.UserCourseRepository;
 import woojjam.utrip.domains.like.repository.VideoLikeRepository;
 import woojjam.utrip.domains.place.domain.Place;
@@ -150,6 +150,10 @@ public class UserService {
 		userCourse.updateUserCourse(user, courseListDto);
 
 		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
+	}
+
+	public User findUserByEmail(String email) {
+		return userRepository.findByEmail(email).orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
 	}
 }
 
