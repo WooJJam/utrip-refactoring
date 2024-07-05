@@ -1,4 +1,4 @@
-package woojjam.utrip.config;
+package woojjam.utrip.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +19,7 @@ import woojjam.utrip.common.security.jwt.AccessTokenProvider;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+	private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 	private final AccessTokenProvider jwtProvider;
 	private final CustomUserDetailsService userDetailsService;
 
@@ -35,6 +36,7 @@ public class WebSecurityConfig {
 			})
 			.addFilterBefore(new JwtAuthenticationFilter(userDetailsService, jwtProvider),
 				UsernamePasswordAuthenticationFilter.class)
+			.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 			.httpBasic(Customizer.withDefaults());
 
 		return http.build();
