@@ -7,12 +7,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.security.filter.JwtAuthenticationFilter;
-import woojjam.utrip.common.security.filter.JwtExceptionFilter;
 
 @Slf4j
 @Configuration
@@ -20,8 +17,7 @@ import woojjam.utrip.common.security.filter.JwtExceptionFilter;
 public class WebSecurityConfig {
 
 	private final AuthenticationEntryPoint authenticationEntryPoint;
-	private final JwtExceptionFilter jwtExceptionFilter;
-	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final FilterRegisterConfig filterRegisterConfig;
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,8 +30,7 @@ public class WebSecurityConfig {
 				request.requestMatchers("/api/auth/**").permitAll();
 				request.anyRequest().authenticated();
 			})
-			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
+			.with(filterRegisterConfig, Customizer.withDefaults())
 			.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 			.httpBasic(Customizer.withDefaults());
 
