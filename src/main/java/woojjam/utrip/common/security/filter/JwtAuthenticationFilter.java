@@ -79,6 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String token = jwtProvider.resolveToken(header);
 
 		if (!StringUtils.hasText(token)) {
+			log.warn("token not found");
 			handleException(StatusCode.TOKEN_IS_NULL);
 		}
 
@@ -106,6 +107,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private void handleException(StatusCode error) throws ServletException {
 		log.error("JwtAuthException = {}, {}", error.getCode(), error.getMessage());
 		TokenException tokenException = new TokenException(error);
-		throw new ServletException(tokenException);
+		throw new ServletException(error.getCode(), tokenException);
 	}
 }

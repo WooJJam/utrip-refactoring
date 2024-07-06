@@ -24,9 +24,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException authException) throws IOException, ServletException {
 		log.warn("Unauthorized : {}", authException.getMessage());
-		ErrorResponse<?> errorResponse = ErrorResponse.of(StatusCode.TOKEN_EXPIRED.getCode(),
-			StatusCode.TOKEN_EXPIRED.getMessage());
-
+		ErrorResponse<?> errorResponse = ErrorResponse.of(StatusCode.UNAUTHORIZED.getCode(),
+			StatusCode.UNAUTHORIZED.getMessage());
 		response.setContentType("application/json;charset=UTF-8");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		objectMapper.writeValue(response.getWriter(), errorResponse);
