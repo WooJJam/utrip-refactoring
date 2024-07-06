@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import woojjam.utrip.common.exception.TokenException;
 import woojjam.utrip.common.reponse.StatusCode;
-import woojjam.utrip.common.security.CustomUserDetailsService;
+import woojjam.utrip.common.security.authentication.CustomUserDetailsService;
 import woojjam.utrip.common.security.jwt.JwtProvider;
 
 @RequiredArgsConstructor
@@ -54,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	/**
 	 * Token이 비어있다면 익명 사용자
+	 *
 	 * @param request
 	 * @return Boolean
 	 * @throws ServletException
@@ -66,6 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	/**
 	 * 토큰 정보가 유효한지 검사
+	 *
 	 * @param request
 	 * @param response
 	 * @return boolean

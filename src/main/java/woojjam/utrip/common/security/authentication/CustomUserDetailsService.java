@@ -1,4 +1,4 @@
-package woojjam.utrip.common.security;
+package woojjam.utrip.common.security.authentication;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.security.authentication.SecurityUserDetails;
 import woojjam.utrip.domains.user.domain.User;
 import woojjam.utrip.domains.user.service.UserService;
 

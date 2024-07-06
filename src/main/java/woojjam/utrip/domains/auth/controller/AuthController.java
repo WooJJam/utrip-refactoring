@@ -3,6 +3,7 @@ package woojjam.utrip.domains.auth.controller;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,17 +31,20 @@ public class AuthController {
 	private final SocialService socialService;
 
 	@PostMapping("/kakao/login")
+	@PreAuthorize("isAnonymous()")
 	public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> request) {
 		String code = request.get("code");
 		return socialService.kakaoLogin(code);
 	}
 
 	@PostMapping("/register")
+	@PreAuthorize("isAnonymous()")
 	public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
 		return authService.register(registerRequest);
 	}
 
 	@PostMapping("/duplicate/email")
+	@PreAuthorize("isAnonymous()")
 	public ResponseEntity<?> checkEmailDuplicate(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
 		log.info("email = {}", email);
@@ -48,6 +52,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
+	@PreAuthorize("isAnonymous()")
 	public ResponseEntity<?> localLogin(@RequestBody LocalLoginRequest localLoginRequest) {
 		return authService.localLogin(localLoginRequest);
 	}
@@ -59,6 +64,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/naver/login")
+	@PreAuthorize("isAnonymous()")
 	public ResponseEntity<?> naverLogin(@RequestBody Map<String, String> request) {
 		String code = request.get("code");
 		return socialService.naverLogin(code);

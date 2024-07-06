@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.security.CustomUserDetailsService;
+import woojjam.utrip.common.security.authentication.CustomUserDetailsService;
 import woojjam.utrip.common.security.filter.JwtAuthenticationFilter;
 import woojjam.utrip.common.security.filter.JwtExceptionFilter;
 import woojjam.utrip.common.security.jwt.JwtProvider;
