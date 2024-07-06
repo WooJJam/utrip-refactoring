@@ -1,8 +1,12 @@
 package woojjam.utrip.common.reponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
-import org.springframework.http.ResponseEntity;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -11,19 +15,19 @@ import org.springframework.http.ResponseEntity;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SuccessResponse<T> {
 
-    private String status;
-    private String message;
-    private T data;
+	private String status;
+	private String message;
+	private T data;
 
-    public static <T> SuccessResponse<T> of(final String status, final String message) {
-        return of(status, message, null);
-    }
+	public static <T> SuccessResponse<T> of(final String status, final String message) {
+		return of(status, message, null);
+	}
 
-    public static <T> SuccessResponse<T> of (String status, String message, T data) {
-        return SuccessResponse.<T>builder()
-                .data(data)
-                .status(status)
-                .message(message)
-                .build();
-    }
+	public static <T> SuccessResponse<T> of(String status, String message, T data) {
+		return SuccessResponse.<T>builder()
+			.data(data)
+			.status(status)
+			.message(message)
+			.build();
+	}
 }
