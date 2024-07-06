@@ -5,38 +5,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.security.CustomUserDetailsService;
 import woojjam.utrip.common.security.filter.JwtAuthenticationFilter;
 import woojjam.utrip.common.security.filter.JwtExceptionFilter;
-import woojjam.utrip.common.security.jwt.AccessTokenProvider;
 
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-	private final AccessTokenProvider jwtProvider;
-	private final CustomUserDetailsService userDetailsService;
-	private final ObjectMapper objectMapper;
-	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final AuthenticationEntryPoint authenticationEntryPoint;
 	private final JwtExceptionFilter jwtExceptionFilter;
-
-	@Bean
-	public JwtAuthenticationFilter jwtAuthenticationFilter() {
-		return new JwtAuthenticationFilter(userDetailsService, jwtProvider);
-	}
-
-	@Bean
-	public JwtExceptionFilter jwtExceptionFilter() {
-		return new JwtExceptionFilter(objectMapper);
-	}
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -49,10 +34,9 @@ public class WebSecurityConfig {
 				request.requestMatchers("/api/auth/**").permitAll();
 				request.anyRequest().authenticated();
 			})
-			.addFilterBefore(jwtAuthenticationFilter(),
-				UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(jwtExceptionFilter(), JwtAuthenticationFilter.class)
-			// .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
+			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
+			.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 			.httpBasic(Customizer.withDefaults());
 
 		return http.build();
