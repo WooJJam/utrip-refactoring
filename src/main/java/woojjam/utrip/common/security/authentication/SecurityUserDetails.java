@@ -1,8 +1,10 @@
 package woojjam.utrip.common.security.authentication;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AccessLevel;
@@ -30,13 +32,13 @@ public class SecurityUserDetails implements UserDetails {
 		return SecurityUserDetails.builder()
 			.userId(user.getId())
 			.email(user.getEmail())
-			// .authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
+			.authorities(List.of(new SimpleGrantedAuthority("ROLE_USER")))
 			.build();
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return this.authorities;
 	}
 
 	@Override
