@@ -2,6 +2,7 @@ package woojjam.utrip.domains.user.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import woojjam.utrip.common.exception.ErrorCausedBy;
 import woojjam.utrip.common.exception.ReasonCode;
 import woojjam.utrip.common.exception.StatusCode;
 
@@ -15,9 +16,7 @@ public enum UserErrorCode {
 	private final ReasonCode reasonCode;
 	private final String message;
 
-	public static String causedBy(UserErrorCode errorCode) {
-		int statusCode = errorCode.getStatusCode().getCode();
-		int reasonCode = errorCode.getReasonCode().getCode();
-		return String.valueOf(statusCode * 10 + reasonCode);
+	public ErrorCausedBy causedBy() {
+		return ErrorCausedBy.of(statusCode, reasonCode);
 	}
 }

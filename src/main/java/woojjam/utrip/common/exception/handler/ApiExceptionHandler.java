@@ -1,13 +1,11 @@
 package woojjam.utrip.common.exception.handler;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import lombok.extern.slf4j.Slf4j;
 import woojjam.utrip.common.reponse.ErrorResponse;
-import woojjam.utrip.domains.user.exception.UserErrorCode;
 import woojjam.utrip.domains.user.exception.UserException;
 
 @Slf4j
@@ -17,7 +15,7 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(UserException.class)
 	public ResponseEntity<?> UserExceptionHandler(UserException e) {
 
-		log.error("User Exception = {}", e.getMessage());
+		log.warn("User Exception = {}", e.getUserErrorCode().getMessage());
 		// if (e.getStatus().equals(StatusCode.BAD_REQUEST)) {
 		// 	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.of(e.getStatus(), e.getMessage()));
 		// }
@@ -31,8 +29,8 @@ public class ApiExceptionHandler {
 		// 		StatusCode.USER_COURSE_NOT_FOUND.getMessage()));
 		// }
 
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-			.body(ErrorResponse.of(UserErrorCode.causedBy(e.getUserErrorCode()), e.getUserErrorCode().getMessage()));
+		return ResponseEntity.status(e.getUserErrorCode().getStatusCode().getCode())
+			.body(ErrorResponse.of(e.errorCausedBy().getCode(), e.explainErrorMessage()));
 		// .body(ErrorResponse.of(UserErrorCode.causedBy(StatusCode.NOT_FOUND, ReasonCode.INVALID_REQUEST_SYNTAX),
 		// 	e.getMessage()));
 	}
