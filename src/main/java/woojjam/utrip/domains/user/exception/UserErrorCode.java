@@ -15,10 +15,9 @@ public enum UserErrorCode {
 	private final ReasonCode reasonCode;
 	private final String message;
 
-	public static String causedBy(StatusCode statusCode, ReasonCode reasonCode) {
-		int status = statusCode.getCode();
-		int reason = reasonCode.getCode();
-		int code = status * 10 + reason;
-		return String.valueOf(code);
+	public static String causedBy(UserErrorCode errorCode) {
+		int statusCode = errorCode.getStatusCode().getCode();
+		int reasonCode = errorCode.getReasonCode().getCode();
+		return String.valueOf(statusCode * 10 + reasonCode);
 	}
 }

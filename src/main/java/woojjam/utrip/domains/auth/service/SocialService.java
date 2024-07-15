@@ -20,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import woojjam.utrip.common.exception.RuntimeException;
-import woojjam.utrip.common.reponse.StatusCode;
+import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.common.security.jwt.AccessTokenProvider;
 import woojjam.utrip.common.security.jwt.RefreshTokenProvider;
@@ -59,7 +59,7 @@ public class SocialService {
 			findUser.get().updateRefreshToken(kakaoUserInfo.getRefreshToken());
 			LoginResponse response = LoginResponse.of(findUser.get(), tokenDto);
 			return ResponseEntity.ok(
-				SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
+				SuccessResponse.of(StatusCode.SUCCESS, response));
 		} else {
 			User user = User.of(
 				kakaoUserInfo.getNickName(),
@@ -72,7 +72,7 @@ public class SocialService {
 
 			LoginResponse response = LoginResponse.of(user, tokenDto);
 			return ResponseEntity.ok(
-				SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
+				SuccessResponse.of(StatusCode.SUCCESS, response));
 		}
 	}
 
@@ -154,7 +154,7 @@ public class SocialService {
 			findUser.get().updateRefreshToken(naverUserInfo.getRefreshToken());
 			LoginResponse response = LoginResponse.of(findUser.get(), tokenDto);
 			return ResponseEntity.ok(
-				SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
+				SuccessResponse.of(StatusCode.SUCCESS, response));
 		} else {
 			User user = User.of(
 				naverUserInfo.getNickName(),
@@ -165,7 +165,7 @@ public class SocialService {
 			);
 			LoginResponse response = LoginResponse.of(user, tokenDto);
 			return ResponseEntity.ok(
-				SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
+				SuccessResponse.of(StatusCode.SUCCESS, response));
 		}
 	}
 

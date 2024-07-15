@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Claims;
@@ -17,8 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.exception.TokenException;
-import woojjam.utrip.common.reponse.StatusCode;
 import woojjam.utrip.common.security.authentication.CustomUserDetailsService;
 import woojjam.utrip.common.security.jwt.JwtProvider;
 
@@ -80,14 +79,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 		String token = jwtProvider.resolveToken(header);
 
-		if (!StringUtils.hasText(token)) {
-			log.warn("token not found");
-			handleException(StatusCode.TOKEN_IS_NULL);
-		}
-
-		if (jwtProvider.isTokenExpired(token)) {
-			handleException(StatusCode.TOKEN_EXPIRED);
-		}
+		// if (!StringUtils.hasText(token)) {
+		// 	log.warn("token not found");
+		// 	handleException(StatusCode.TOKEN_IS_NULL);
+		// }
+		//
+		// if (jwtProvider.isTokenExpired(token)) {
+		// 	handleException(StatusCode.TOKEN_EXPIRED);
+		// }
 
 		return token;
 	}
@@ -107,8 +106,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private void handleException(StatusCode error) throws ServletException {
-		log.error("JwtAuthException = {}, {}", error.getCode(), error.getMessage());
+		log.error("JwtAuthException = {}, {}", error.getCode(), error);
 		TokenException tokenException = new TokenException(error);
-		throw new ServletException(error.getCode(), tokenException);
+		throw new ServletException(String.valueOf(error.getCode()), tokenException);
 	}
 }

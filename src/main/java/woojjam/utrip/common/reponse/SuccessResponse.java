@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import woojjam.utrip.common.exception.StatusCode;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,15 +16,19 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SuccessResponse<T> {
 
-	private String status;
+	private int status;
 	private String message;
 	private T data;
 
-	public static <T> SuccessResponse<T> of(final String status, final String message) {
-		return of(status, message, null);
+	public static <T> SuccessResponse<T> of(StatusCode statusCode) {
+		return of(statusCode.getCode(), "message", null);
 	}
 
-	public static <T> SuccessResponse<T> of(String status, String message, T data) {
+	public static <T> SuccessResponse<T> of(StatusCode statusCode, T data) {
+		return of(statusCode.getCode(), "message", data);
+	}
+
+	public static <T> SuccessResponse<T> of(int status, String message, T data) {
 		return SuccessResponse.<T>builder()
 			.data(data)
 			.status(status)

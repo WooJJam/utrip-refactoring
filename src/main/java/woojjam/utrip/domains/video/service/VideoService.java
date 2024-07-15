@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.NoSuchElementException;
-import woojjam.utrip.common.exception.UserException;
-import woojjam.utrip.common.reponse.StatusCode;
+import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.domains.like.domain.VideoLike;
 import woojjam.utrip.domains.like.repository.VideoLikeRepository;
@@ -38,9 +36,9 @@ public class VideoService {
 	public List<VideoListDto> getAllVideos() {
 		List<Video> videos = videoRepository.findAll();
 
-		if (videos.isEmpty()) {
-			throw new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND);
-		}
+		// if (videos.isEmpty()) {
+		// 	throw new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND);
+		// }
 
 		return videos.stream()
 			.map(VideoListDto::from)
@@ -52,9 +50,9 @@ public class VideoService {
 		Pageable pageable = PageRequest.of(page, size);
 		Page<Video> videos = videoRepository.findByTagsContaining(tag, pageable);
 
-		if (videos.isEmpty()) {
-			throw new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND);
-		}
+		// if (videos.isEmpty()) {
+		// 	throw new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND);
+		// }
 
 		return videos.stream()
 			.map(VideoListDto::from)
@@ -63,20 +61,22 @@ public class VideoService {
 
 	@Transactional(readOnly = true)
 	public ResponseEntity<?> getVideoDetailInfo(Long videoId) {
-		Video video = videoRepository.findById(videoId)
-			.orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(),
+		Video video = videoRepository.findById(videoId).get();
+		// .orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
+		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS,
 			VideoInfoDto.fromEntity(video)));
 	}
 
 	public ResponseEntity<?> likeVideo(Long videoId, String email) {
 		Video video = findVideoById(videoId);
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
+		User user = userRepository.findByEmail(email).get();
+		// .orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
 
 		boolean alreadyLiked = videoLikeRepository.existsByVideoIdAndUserId(video.getId(), user.getId());
 		if (alreadyLiked) {
 			return ResponseEntity.badRequest()
-				.body(SuccessResponse.of(StatusCode.ALREADY_LIKED.getCode(), StatusCode.ALREADY_LIKED.getMessage()));
+				.body(SuccessResponse.of(null));
+			// StatusCode.ALREADY_LIKED.getCode(), StatusCode.ALREADY_LIKED.getMessage()));
 		}
 
 		VideoLike videoLike = VideoLike.from(user, video);
@@ -87,12 +87,12 @@ public class VideoService {
 
 		log.info("Video ID = {}, Video like: {}", videoId, video.getLikeCount());
 
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
+		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
 	}
 
 	private Video findVideoById(Long videoId) {
-		return videoRepository.findById(videoId)
-			.orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
+		return videoRepository.findById(videoId).get();
+		// .orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
 	}
 
 	public List<VideoListDto> getTopLikedVideo(int limit) {

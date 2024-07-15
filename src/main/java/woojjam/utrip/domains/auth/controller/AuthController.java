@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.UserException;
-import woojjam.utrip.common.reponse.StatusCode;
+import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.domains.auth.dto.request.ChangePasswordRequest;
 import woojjam.utrip.domains.auth.dto.request.LocalLoginRequest;
@@ -73,15 +72,15 @@ public class AuthController {
 	@PostMapping("/find-passowrd")
 	public ResponseEntity<?> findPassword(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
-		if (!authService.isUserEmail(email)) {
-			throw new UserException(StatusCode.USER_NOT_FOUND);
-		}
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
+		// if (!authService.isUserEmail(email)) {
+		// 	throw new UserException(StatusCode.USER_NOT_FOUND);
+		// }
+		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
 	}
 
 	@PatchMapping("/change-password")
 	public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
 		authService.changePassword(changePasswordRequest);
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
+		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
 	}
 }
