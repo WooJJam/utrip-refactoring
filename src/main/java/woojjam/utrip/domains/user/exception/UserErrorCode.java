@@ -11,7 +11,16 @@ import woojjam.utrip.common.exception.StatusCode;
 @RequiredArgsConstructor
 public enum UserErrorCode implements BaseErrorCode {
 
-	USER_NOT_FOUND(StatusCode.NOT_FOUND, ReasonCode.REQUESTED_RESOURCE_NOT_FOUND, "유저가 존재하지 않습니다."); // 4040
+	/**
+	 * 404 Not Found Error Codes
+	 */
+	USER_NOT_FOUND(StatusCode.NOT_FOUND, ReasonCode.REQUESTED_RESOURCE_NOT_FOUND, "유저가 존재하지 않습니다."), // 4040
+
+	/**
+	 * 409 Conflict Error Codes
+	 */
+
+	EMAIL_ALREADY_EXISTS(StatusCode.CONFLICT, ReasonCode.RESOURCE_ALREADY_EXISTS, "중복된 이메일입니다."); // 4091
 
 	private final StatusCode statusCode;
 	private final ReasonCode reasonCode;

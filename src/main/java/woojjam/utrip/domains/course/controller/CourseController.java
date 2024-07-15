@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.domains.course.dto.CourseListDto;
 import woojjam.utrip.domains.course.service.CourseService;
@@ -31,7 +30,7 @@ public class CourseController {
 		// String token = jwtUtils.splitBearerToken(bearerToken);
 		// String email = (String)jwtUtils.getClaims(token).get("email");
 		// courseService.postUserCourse(courseListDto, email);
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	@GetMapping("/{video_id}")

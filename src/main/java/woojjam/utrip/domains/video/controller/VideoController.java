@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.domains.video.dto.VideoListDto;
 import woojjam.utrip.domains.video.service.VideoService;
@@ -31,14 +30,14 @@ public class VideoController {
 	public ResponseEntity<?> getVideoList() {
 		List<VideoListDto> videoList = videoService.getAllVideos();
 		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS, videoList));
+			SuccessResponse.of(videoList));
 	}
 
 	@GetMapping("/tag/{tag}")
 	public ResponseEntity<?> getVideosByTag(@PathVariable String tag, @RequestParam int page, @RequestParam int size) {
 		List<VideoListDto> videos = videoService.getVideosByTag(tag, page, size);
 		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS, videos));
+			SuccessResponse.of(videos));
 	}
 
 	@GetMapping("/{video_id}")
@@ -53,14 +52,13 @@ public class VideoController {
 		// String email = (String)jwtUtils.getClaims(token).get("email");
 
 		// videoService.likeVideo(videoId, email);
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	@GetMapping("/top-liked")
 	public ResponseEntity<?> getVideoLikesFive(@RequestParam(defaultValue = "5") int limit) {
 		return ResponseEntity.ok(
 			SuccessResponse.of(
-				StatusCode.SUCCESS,
 				videoService.getTopLikedVideo(limit)
 			)
 		);

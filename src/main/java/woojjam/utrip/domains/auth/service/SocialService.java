@@ -58,8 +58,7 @@ public class SocialService {
 		if (findUser.isPresent()) {
 			findUser.get().updateRefreshToken(kakaoUserInfo.getRefreshToken());
 			LoginResponse response = LoginResponse.of(findUser.get(), tokenDto);
-			return ResponseEntity.ok(
-				SuccessResponse.of(StatusCode.SUCCESS, response));
+			return ResponseEntity.ok(SuccessResponse.of(response));
 		} else {
 			User user = User.of(
 				kakaoUserInfo.getNickName(),
@@ -71,8 +70,7 @@ public class SocialService {
 			userRepository.save(user);
 
 			LoginResponse response = LoginResponse.of(user, tokenDto);
-			return ResponseEntity.ok(
-				SuccessResponse.of(StatusCode.SUCCESS, response));
+			return ResponseEntity.ok(SuccessResponse.of(response));
 		}
 	}
 
@@ -154,7 +152,7 @@ public class SocialService {
 			findUser.get().updateRefreshToken(naverUserInfo.getRefreshToken());
 			LoginResponse response = LoginResponse.of(findUser.get(), tokenDto);
 			return ResponseEntity.ok(
-				SuccessResponse.of(StatusCode.SUCCESS, response));
+				SuccessResponse.of(response));
 		} else {
 			User user = User.of(
 				naverUserInfo.getNickName(),
@@ -165,7 +163,7 @@ public class SocialService {
 			);
 			LoginResponse response = LoginResponse.of(user, tokenDto);
 			return ResponseEntity.ok(
-				SuccessResponse.of(StatusCode.SUCCESS, response));
+				SuccessResponse.of(response));
 		}
 	}
 

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.domains.auth.dto.request.ChangePasswordRequest;
 import woojjam.utrip.domains.auth.dto.request.LocalLoginRequest;
@@ -75,12 +74,12 @@ public class AuthController {
 		// if (!authService.isUserEmail(email)) {
 		// 	throw new UserException(StatusCode.USER_NOT_FOUND);
 		// }
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	@PatchMapping("/change-password")
 	public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
 		authService.changePassword(changePasswordRequest);
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 }

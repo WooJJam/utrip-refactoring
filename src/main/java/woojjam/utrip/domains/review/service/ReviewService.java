@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import woojjam.utrip.common.dto.BasePageDto;
-import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.domains.review.domain.Review;
 import woojjam.utrip.domains.review.dto.ReviewDto;
@@ -60,8 +59,7 @@ public class ReviewService {
 		});
 		BasePageDto<ReviewDto> basePageDto = BasePageDto.from(reviewDtoPage);
 
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), "StatusCode.SUCCESS.getMessage()",
-			ReviewPageResponse.of(reviewDtoPage.getContent(), basePageDto)));
+		return ResponseEntity.ok(SuccessResponse.of(ReviewPageResponse.of(reviewDtoPage.getContent(), basePageDto)));
 	}
 
 	public ResponseEntity<?> saveReview(Long videoId, String email, SaveReviewDto saveReviewDto) {
@@ -71,7 +69,7 @@ public class ReviewService {
 		Review review = Review.of(user, video, saveReviewDto);
 		log.info("Review = {}", review);
 		reviewRepository.save(review);
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	private User findUserByEmail(String email) {
@@ -97,7 +95,7 @@ public class ReviewService {
 
 		review.update(saveReviewDto);
 
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	public ResponseEntity<?> deleteReview(Long videoId, Long reviewId) {
@@ -108,7 +106,7 @@ public class ReviewService {
 
 		reviewRepository.delete(review);
 
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 }

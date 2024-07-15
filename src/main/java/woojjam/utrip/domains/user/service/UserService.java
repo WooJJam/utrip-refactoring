@@ -60,7 +60,7 @@ public class UserService {
 			.toList();
 
 		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS, courses));
+			SuccessResponse.of(courses));
 	}
 
 	private CourseDto createCourseDto(String courseName, List<UserCourseDetailDto> details) {
@@ -101,12 +101,12 @@ public class UserService {
 		List<Video> findVideos = videoRepository.findByIdIn(videoLikes);
 		List<VideoListDto> videoList = findVideos.stream().map(VideoListDto::from).toList();
 		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS, videoList));
+			SuccessResponse.of(videoList));
 	}
 
 	public ResponseEntity<?> deleteUserLikeVideo(Long userId, Long videoId) {
 		videoLikeRepository.deleteByUserIdAndVideoId(userId, videoId);
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	public ResponseEntity<?> deleteUserCourse(Long userCourseId) {
@@ -116,7 +116,7 @@ public class UserService {
 		} catch (Exception e) {
 			throw new RuntimeException(StatusCode.INTERNAL_SERVER_ERROR);
 		}
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	public ResponseEntity<?> updateUserCourse(Long userId, Long userCourseId, CourseListDto courseListDto) {
@@ -150,7 +150,7 @@ public class UserService {
 		log.info("After Course Detail Update Query");
 		userCourse.updateUserCourse(user, courseListDto);
 
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	public User findUserByEmail(String email) {

@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.domains.like.domain.VideoLike;
 import woojjam.utrip.domains.like.repository.VideoLikeRepository;
@@ -63,8 +62,7 @@ public class VideoService {
 	public ResponseEntity<?> getVideoDetailInfo(Long videoId) {
 		Video video = videoRepository.findById(videoId).get();
 		// .orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS,
-			VideoInfoDto.fromEntity(video)));
+		return ResponseEntity.ok(SuccessResponse.of(VideoInfoDto.fromEntity(video)));
 	}
 
 	public ResponseEntity<?> likeVideo(Long videoId, String email) {
@@ -75,7 +73,7 @@ public class VideoService {
 		boolean alreadyLiked = videoLikeRepository.existsByVideoIdAndUserId(video.getId(), user.getId());
 		if (alreadyLiked) {
 			return ResponseEntity.badRequest()
-				.body(SuccessResponse.of(null));
+				.body(SuccessResponse.noContent());
 			// StatusCode.ALREADY_LIKED.getCode(), StatusCode.ALREADY_LIKED.getMessage()));
 		}
 
@@ -87,7 +85,7 @@ public class VideoService {
 
 		log.info("Video ID = {}, Video like: {}", videoId, video.getLikeCount());
 
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	private Video findVideoById(Long videoId) {

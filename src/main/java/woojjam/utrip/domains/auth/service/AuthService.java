@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.common.security.jwt.AccessTokenProvider;
 import woojjam.utrip.common.security.jwt.RefreshTokenProvider;
@@ -44,16 +43,15 @@ public class AuthService {
 		// }
 		User user = User.of(nickname, email, password, null, role);
 		userRepository.save(user);
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseEntity<?> checkEmailDuplicate(String email) {
 		if (Boolean.FALSE.equals(userRepository.existsByEmail(email))) {
-			return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS));
+			return ResponseEntity.ok(SuccessResponse.noContent());
 		}
-		return ResponseEntity.ok(null);
-		// throw new UserException(StatusCode.DUPLICATE_EMAIL);
+		throw new UserException(UserErrorCode.EMAIL_ALREADY_EXISTS);
 	}
 
 	public ResponseEntity<?> localLogin(LocalLoginRequest localLoginRequest) {
@@ -65,8 +63,7 @@ public class AuthService {
 		userRepository.save(user);
 		LoginResponse response = LoginResponse.of(user, TokenDto.of(accessToken, refreshToken));
 
-		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS, response));
+		return ResponseEntity.ok(SuccessResponse.of(response));
 	}
 
 	public ResponseEntity<?> reissue(String token) {

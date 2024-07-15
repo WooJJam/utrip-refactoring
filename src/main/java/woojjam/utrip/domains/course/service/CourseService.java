@@ -110,7 +110,6 @@ public class CourseService {
 
 		CourseResponse response = CourseResponse.from(placeDto);
 
-		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS, response));
+		return ResponseEntity.ok(SuccessResponse.of(response));
 	}
 }
