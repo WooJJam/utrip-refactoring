@@ -15,7 +15,7 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(UserException.class)
 	public ResponseEntity<?> UserExceptionHandler(UserException e) {
 
-		log.warn("User Exception = {}", e.getUserErrorCode().getMessage());
+		log.warn("User Exception = {}", e.getBaseErrorCode().getErrorMessage());
 		// if (e.getStatus().equals(StatusCode.BAD_REQUEST)) {
 		// 	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.of(e.getStatus(), e.getMessage()));
 		// }
@@ -30,9 +30,7 @@ public class ApiExceptionHandler {
 		// }
 
 		return ResponseEntity.status(e.getUserErrorCode().getStatusCode().getCode())
-			.body(ErrorResponse.of(e.errorCausedBy().getCode(), e.explainErrorMessage()));
-		// .body(ErrorResponse.of(UserErrorCode.causedBy(StatusCode.NOT_FOUND, ReasonCode.INVALID_REQUEST_SYNTAX),
-		// 	e.getMessage()));
+			.body(ErrorResponse.of(e.errorCausedBy().getCode(), e.getUserErrorCode().getErrorMessage()));
 	}
 
 	// @ExceptionHandler(TokenException.class)

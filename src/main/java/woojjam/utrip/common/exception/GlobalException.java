@@ -3,16 +3,15 @@ package woojjam.utrip.common.exception;
 import lombok.Getter;
 
 @Getter
-public class GlobalException extends RuntimeException {
+public class GlobalException extends java.lang.RuntimeException {
 
-	private StatusCode statusCode;
-	private ReasonCode reasonCode;
-	private String message;
+	private final BaseErrorCode baseErrorCode;
 
-	public GlobalException(StatusCode statusCode, ReasonCode reasonCode) {
-		super(statusCode);
-		this.statusCode = statusCode;
-		this.reasonCode = reasonCode;
-		System.out.println("reasonCode+statusCode = " + reasonCode + statusCode);
+	public GlobalException(BaseErrorCode baseErrorCore) {
+		this.baseErrorCode = baseErrorCore;
+	}
+
+	public ErrorCausedBy errorCausedBy() {
+		return baseErrorCode.causedBy();
 	}
 }
