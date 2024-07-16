@@ -14,4 +14,8 @@ public class GlobalException extends java.lang.RuntimeException {
 	public ErrorCausedBy errorCausedBy() {
 		return baseErrorCode.causedBy();
 	}
+
+	public String errorMessage() {
+		return baseErrorCode.getErrorMessage();
+	}
 }

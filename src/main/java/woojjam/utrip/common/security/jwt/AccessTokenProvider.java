@@ -17,6 +17,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import woojjam.utrip.common.exception.TokenException;
+import woojjam.utrip.domains.auth.exception.JwtErrorCode;
 
 @Slf4j
 @Component
@@ -64,9 +65,8 @@ public class AccessTokenProvider implements JwtProvider {
 				.parseSignedClaims(token)
 				.getPayload();
 		} catch (JwtException e) {
-			log.warn(e.getMessage());
-			throw e;
-			// throw new TokenException(StatusCode.TOKEN_EXPIRED);
+			log.warn("getClaims = {}", e.getMessage());
+			throw new TokenException(JwtErrorCode.TOKEN_IS_EXPIRE);
 		}
 	}
 
@@ -76,9 +76,10 @@ public class AccessTokenProvider implements JwtProvider {
 			Claims claims = getClaims(token);
 			return claims.getExpiration().before(new Date());
 		} catch (TokenException e) {
-			// if (StatusCode.TOKEN_EXPIRED.getCode().equals(e.getStatus())) {
-			// 	return true;
-			// }
+			log.warn("isTokenExpired = {}", e.getJwtErrorCode().causedBy().getCode());
+			if (JwtErrorCode.TOKEN_IS_EXPIRE.causedBy().getCode().equals(e.getJwtErrorCode().causedBy().getCode())) {
+				return true;
+			}
 			throw e;
 		}
 	}

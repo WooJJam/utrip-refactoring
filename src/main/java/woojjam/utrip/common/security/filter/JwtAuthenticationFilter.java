@@ -16,10 +16,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.exception.TokenException;
 import woojjam.utrip.common.security.authentication.CustomUserDetailsService;
 import woojjam.utrip.common.security.jwt.JwtProvider;
+import woojjam.utrip.domains.auth.exception.JwtErrorCode;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -31,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
-
+		System.out.println(" ================ ");
 		if (isAnonymous(request)) {
 			log.info("Anonymous Request");
 			filterChain.doFilter(request, response);
@@ -83,10 +83,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		// 	log.warn("token not found");
 		// 	handleException(StatusCode.TOKEN_IS_NULL);
 		// }
-		//
-		// if (jwtProvider.isTokenExpired(token)) {
-		// 	handleException(StatusCode.TOKEN_EXPIRED);
-		// }
+
+		if (jwtProvider.isTokenExpired(token)) {
+			log.warn("token is expired");
+			handleException(JwtErrorCode.TOKEN_IS_EXPIRE);
+		}
 
 		return token;
 	}
@@ -105,9 +106,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		SecurityContextHolder.getContext().setAuthentication(auth);
 	}
 
-	private void handleException(StatusCode error) throws ServletException {
-		log.error("JwtAuthException = {}, {}", error.getCode(), error);
+	private void handleException(JwtErrorCode error) throws ServletException {
+		log.error("JwtAuthException = {}, {}", error.name(), error.getErrorMessage());
 		TokenException tokenException = new TokenException(error);
-		throw new ServletException(String.valueOf(error.getCode()), tokenException);
+		throw new ServletException(tokenException);
 	}
 }

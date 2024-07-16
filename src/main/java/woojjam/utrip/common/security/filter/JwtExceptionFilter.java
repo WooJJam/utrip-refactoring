@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import woojjam.utrip.common.exception.TokenException;
 import woojjam.utrip.common.reponse.ErrorResponse;
 
 @Slf4j
@@ -26,17 +27,19 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (Exception e) {
-			log.warn("JwtExceptionFilter - Error Code: {}, CausedBy: {}", e.getMessage(), e.getCause().getMessage());
-			sendJwtError(request, response, e);
+			Throwable cause = e.getCause();
+			if (cause instanceof TokenException) {
+				sendJwtError(response, (TokenException)cause);
+			}
 		}
 	}
 
-	private void sendJwtError(HttpServletRequest request, HttpServletResponse response, Exception e) throws
+	private void sendJwtError(HttpServletResponse response, TokenException e) throws
 		IOException {
 		response.setContentType("application/json;charset=UTF-8");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-		ErrorResponse errorResponse = ErrorResponse.of(e.getMessage(), e.getCause().getMessage());
+		ErrorResponse errorResponse = ErrorResponse.of(e.errorCausedBy().getCode(), e.errorMessage());
 		response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
 	}
 }

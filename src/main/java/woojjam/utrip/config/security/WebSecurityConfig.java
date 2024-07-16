@@ -30,7 +30,7 @@ public class WebSecurityConfig {
 			.cors(cors -> cors.disable())
 			.authorizeHttpRequests(request -> {
 				request.requestMatchers("/api/auth/**").anonymous();
-				request.anyRequest().permitAll();
+				request.anyRequest().authenticated();
 			})
 			.with(filterRegisterConfig, Customizer.withDefaults())
 			.exceptionHandling(exception -> {
