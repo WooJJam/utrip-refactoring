@@ -12,10 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.NoSuchElementException;
 import woojjam.utrip.common.exception.RuntimeException;
-import woojjam.utrip.common.exception.UserException;
-import woojjam.utrip.common.reponse.StatusCode;
+import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.domains.course.domain.CourseDetail;
 import woojjam.utrip.domains.course.domain.UserCourse;
@@ -33,6 +31,8 @@ import woojjam.utrip.domains.place.domain.Place;
 import woojjam.utrip.domains.place.dto.PlaceDto;
 import woojjam.utrip.domains.place.repository.PlaceRepository;
 import woojjam.utrip.domains.user.domain.User;
+import woojjam.utrip.domains.user.exception.UserErrorCode;
+import woojjam.utrip.domains.user.exception.UserException;
 import woojjam.utrip.domains.user.repository.UserRepository;
 import woojjam.utrip.domains.video.domain.Video;
 import woojjam.utrip.domains.video.repository.VideoRepository;
@@ -52,7 +52,7 @@ public class CourseService {
 
 	public void postUserCourse(CourseListDto courseListDto, String email) {
 		Optional<User> findUser = userRepository.findByEmail(email);
-		User user = findUser.orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
+		User user = findUser.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
 		String courseName = courseListDto.getName();
 		UserCourse userCourse = saveUserCourse(user, courseName);
@@ -102,15 +102,14 @@ public class CourseService {
 
 	public ResponseEntity<?> getVideoCourse(Long videoId) {
 
-		Video videoCourse = videoRepository.findById(videoId)
-			.orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
+		Video videoCourse = videoRepository.findById(videoId).get();
+		// .orElseThrow(() -> new NoSuchElementException(StatusCode.VIDEO_NOT_FOUND));
 		Place place = videoCourse.getPlace();
 
 		PlaceDto placeDto = PlaceDto.from(place);
 
 		CourseResponse response = CourseResponse.from(placeDto);
 
-		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
+		return ResponseEntity.ok(SuccessResponse.of(response));
 	}
 }

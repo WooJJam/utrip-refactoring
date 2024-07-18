@@ -13,10 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.NoSuchElementException;
 import woojjam.utrip.common.exception.RuntimeException;
-import woojjam.utrip.common.exception.UserException;
-import woojjam.utrip.common.reponse.StatusCode;
+import woojjam.utrip.common.exception.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.domains.course.domain.UserCourse;
 import woojjam.utrip.domains.course.dto.CourseDto;
@@ -29,6 +27,8 @@ import woojjam.utrip.domains.place.domain.Place;
 import woojjam.utrip.domains.place.dto.PlaceDto;
 import woojjam.utrip.domains.place.repository.PlaceRepository;
 import woojjam.utrip.domains.user.domain.User;
+import woojjam.utrip.domains.user.exception.UserErrorCode;
+import woojjam.utrip.domains.user.exception.UserException;
 import woojjam.utrip.domains.user.repository.UserRepository;
 import woojjam.utrip.domains.video.domain.Video;
 import woojjam.utrip.domains.video.dto.VideoListDto;
@@ -48,7 +48,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public ResponseEntity<?> findUserCourse(Long userId) {
-		userRepository.findById(userId).orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
+		userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 		List<UserCourseDetailDto> userCourseDetailDtos = userCourseRepository.findDetailsByUserIdWithFetchJoin(userId);
 
 		Map<String, List<UserCourseDetailDto>> groupedByCourse = userCourseDetailDtos.stream()
@@ -60,7 +60,7 @@ public class UserService {
 			.toList();
 
 		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), courses));
+			SuccessResponse.of(courses));
 	}
 
 	private CourseDto createCourseDto(String courseName, List<UserCourseDetailDto> details) {
@@ -101,12 +101,12 @@ public class UserService {
 		List<Video> findVideos = videoRepository.findByIdIn(videoLikes);
 		List<VideoListDto> videoList = findVideos.stream().map(VideoListDto::from).toList();
 		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), videoList));
+			SuccessResponse.of(videoList));
 	}
 
 	public ResponseEntity<?> deleteUserLikeVideo(Long userId, Long videoId) {
 		videoLikeRepository.deleteByUserIdAndVideoId(userId, videoId);
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	public ResponseEntity<?> deleteUserCourse(Long userCourseId) {
@@ -116,18 +116,19 @@ public class UserService {
 		} catch (Exception e) {
 			throw new RuntimeException(StatusCode.INTERNAL_SERVER_ERROR);
 		}
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	public ResponseEntity<?> updateUserCourse(Long userId, Long userCourseId, CourseListDto courseListDto) {
 		log.info("user id = {} , userCourse Id = {}", userId, userCourseId);
 		// UserCourse 조회
-		UserCourse userCourse = userCourseRepository.findById(userCourseId)
-			.orElseThrow(() -> new NoSuchElementException(StatusCode.USER_COURSE_NOT_FOUND));
+		UserCourse userCourse = userCourseRepository.findById(userCourseId).get();
+		// .orElseThrow(() -> new NoSuchElementException(StatusCode.USER_COURSE_NOT_FOUND));
 
 		log.info("User Course = {}", userCourse);
 		// User 조회
-		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
 		//        courseDetailRepository.deleteAllByUserCourseId(userCourseId);
 		courseListDto.getPlan().forEach(courseList -> {
@@ -149,11 +150,11 @@ public class UserService {
 		log.info("After Course Detail Update Query");
 		userCourse.updateUserCourse(user, courseListDto);
 
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	public User findUserByEmail(String email) {
-		return userRepository.findByEmail(email).orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
+		return userRepository.findByEmail(email).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 	}
 }
 

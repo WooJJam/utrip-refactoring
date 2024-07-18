@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Claims;
@@ -18,9 +17,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import woojjam.utrip.common.exception.TokenException;
-import woojjam.utrip.common.reponse.StatusCode;
 import woojjam.utrip.common.security.authentication.CustomUserDetailsService;
 import woojjam.utrip.common.security.jwt.JwtProvider;
+import woojjam.utrip.domains.auth.exception.JwtErrorCode;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -32,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
-
 		if (isAnonymous(request)) {
 			log.info("Anonymous Request");
 			filterChain.doFilter(request, response);
@@ -80,13 +78,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 		String token = jwtProvider.resolveToken(header);
 
-		if (!StringUtils.hasText(token)) {
-			log.warn("token not found");
-			handleException(StatusCode.TOKEN_IS_NULL);
-		}
+		// if (!StringUtils.hasText(token)) {
+		// 	log.warn("token not found");
+		// 	handleException(StatusCode.TOKEN_IS_NULL);
+		// }
 
 		if (jwtProvider.isTokenExpired(token)) {
-			handleException(StatusCode.TOKEN_EXPIRED);
+			log.warn("token is expired");
+			handleException(JwtErrorCode.TOKEN_IS_EXPIRE);
 		}
 
 		return token;
@@ -106,9 +105,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		SecurityContextHolder.getContext().setAuthentication(auth);
 	}
 
-	private void handleException(StatusCode error) throws ServletException {
-		log.error("JwtAuthException = {}, {}", error.getCode(), error.getMessage());
+	private void handleException(JwtErrorCode error) throws ServletException {
+		log.error("JwtAuthException = {}, {}", error.name(), error.getErrorMessage());
 		TokenException tokenException = new TokenException(error);
-		throw new ServletException(error.getCode(), tokenException);
+		throw new ServletException(tokenException);
 	}
 }

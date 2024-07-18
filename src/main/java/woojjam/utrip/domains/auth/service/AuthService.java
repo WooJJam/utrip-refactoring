@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import woojjam.utrip.common.exception.UserException;
-import woojjam.utrip.common.reponse.StatusCode;
 import woojjam.utrip.common.reponse.SuccessResponse;
 import woojjam.utrip.common.security.jwt.AccessTokenProvider;
 import woojjam.utrip.common.security.jwt.RefreshTokenProvider;
@@ -19,6 +17,8 @@ import woojjam.utrip.domains.auth.dto.request.ChangePasswordRequest;
 import woojjam.utrip.domains.auth.dto.request.LocalLoginRequest;
 import woojjam.utrip.domains.auth.dto.request.RegisterRequest;
 import woojjam.utrip.domains.user.domain.User;
+import woojjam.utrip.domains.user.exception.UserErrorCode;
+import woojjam.utrip.domains.user.exception.UserException;
 import woojjam.utrip.domains.user.repository.UserRepository;
 
 @Slf4j
@@ -38,33 +38,32 @@ public class AuthService {
 		String password = registerRequest.getPassword();
 		String role = registerRequest.getRole();
 		Optional<User> findUser = userRepository.findByEmail(email);
-		if (findUser.isPresent()) {
-			throw new UserException(StatusCode.DUPLICATE_EMAIL);
-		}
+		// if (findUser.isPresent()) {
+		// 	throw new UserException(StatusCode.DUPLICATE_EMAIL);
+		// }
 		User user = User.of(nickname, email, password, null, role);
 		userRepository.save(user);
-		return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
+		return ResponseEntity.ok(SuccessResponse.noContent());
 	}
 
 	@Transactional(readOnly = true)
 	public ResponseEntity<?> checkEmailDuplicate(String email) {
 		if (Boolean.FALSE.equals(userRepository.existsByEmail(email))) {
-			return ResponseEntity.ok(SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage()));
+			return ResponseEntity.ok(SuccessResponse.noContent());
 		}
-		throw new UserException(StatusCode.DUPLICATE_EMAIL);
+		throw new UserException(UserErrorCode.EMAIL_ALREADY_EXISTS);
 	}
 
 	public ResponseEntity<?> localLogin(LocalLoginRequest localLoginRequest) {
 		User user = userRepository.findByEmailAndPassword(localLoginRequest.getEmail(), localLoginRequest.getPassword())
-			.orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
+			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 		String accessToken = accessTokenProvider.generateToken(user.getEmail());
 		String refreshToken = refreshTokenProvider.generateToken(user.getEmail());
 		user.updateRefreshToken(refreshToken);
 		userRepository.save(user);
 		LoginResponse response = LoginResponse.of(user, TokenDto.of(accessToken, refreshToken));
 
-		return ResponseEntity.ok(
-			SuccessResponse.of(StatusCode.SUCCESS.getCode(), StatusCode.SUCCESS.getMessage(), response));
+		return ResponseEntity.ok(SuccessResponse.of(response));
 	}
 
 	public ResponseEntity<?> reissue(String token) {
@@ -82,7 +81,8 @@ public class AuthService {
 		// 		throw new UserException(StatusCode.USER_NOT_FOUND);
 		// 	}
 		// }
-		throw new UserException(StatusCode.LOGIN_REQUIRED);
+		// throw new UserException(StatusCode.);
+		throw new RuntimeException("수정해야함");
 	}
 
 	@Transactional(readOnly = true)
@@ -95,12 +95,14 @@ public class AuthService {
 		String newPassword = changePasswordRequest.getNewPassword();
 		String checkPassword = changePasswordRequest.getCheckPassword();
 
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserException(StatusCode.USER_NOT_FOUND));
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
 		if (newPassword.equals(checkPassword)) {
 			user.changePassword(newPassword);
 		} else {
-			throw new UserException(StatusCode.PASSWORD_NOT_MATCH);
+			System.out.println("수정해야");
+			// throw new UserException(StatusCode.PASSWORD_NOT_MATCH);
 		}
 	}
 }
