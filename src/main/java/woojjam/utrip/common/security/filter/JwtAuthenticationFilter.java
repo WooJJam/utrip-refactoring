@@ -31,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
-		System.out.println(" ================ ");
 		if (isAnonymous(request)) {
 			log.info("Anonymous Request");
 			filterChain.doFilter(request, response);

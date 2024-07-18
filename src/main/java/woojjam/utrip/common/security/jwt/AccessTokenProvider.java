@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -21,11 +22,12 @@ import woojjam.utrip.domains.auth.exception.JwtErrorCode;
 
 @Slf4j
 @Component
+@Qualifier("accessTokenProvider")
 @Primary
 public class AccessTokenProvider implements JwtProvider {
 
-	private final SecretKey secretKey;
-	private final Duration accessTokenExpiration;
+	private SecretKey secretKey;
+	private Duration accessTokenExpiration;
 
 	public AccessTokenProvider(
 		@Value("${jwt.secret.access-token}") String secretKey,
