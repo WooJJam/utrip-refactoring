@@ -25,7 +25,11 @@ public class JwtHelper {
 		return TokenDto.of(accessToken, refreshToken);
 	}
 
-	public String generateRefreshToken(String email) {
-		return refreshTokenProvider.generateToken("jaemin5548@naver.com");
+	public boolean isAccessTokenExpiredToken(String token) {
+		return accessTokenProvider.isTokenExpired(token);
+	}
+
+	public boolean isRefreshTokenExpiredToken(String token) {
+		return refreshTokenProvider.isTokenExpired(token);
 	}
 }
