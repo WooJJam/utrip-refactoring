@@ -17,6 +17,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import woojjam.utrip.common.exception.TokenException;
+import woojjam.utrip.domains.auth.exception.JwtErrorCode;
 
 @Slf4j
 @Component
@@ -70,10 +71,10 @@ public class RefreshTokenProvider implements JwtProvider {
 			Claims claims = getClaims(token);
 			return claims.getExpiration().before(new Date());
 		} catch (TokenException e) {
-			// if (StatusCode.TOKEN_EXPIRED.getCode().equals(e.getStatus())) {
-			// 	return true;
-			// }
-			throw e;
+			if (JwtErrorCode.TOKEN_IS_EXPIRE.causedBy().getCode().equals(e.getJwtErrorCode().causedBy().getCode())) {
+				return true;
+			}
+			return false;
 		}
 	}
 
