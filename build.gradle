@@ -40,7 +40,9 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
     implementation "org.springframework.boot:spring-boot-starter-security"
-
+    
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 test {

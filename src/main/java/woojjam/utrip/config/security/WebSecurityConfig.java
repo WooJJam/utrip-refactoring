@@ -29,6 +29,7 @@ public class WebSecurityConfig {
 			.csrf(csrf -> csrf.disable())
 			.cors(cors -> cors.disable())
 			.authorizeHttpRequests(request -> {
+				request.requestMatchers("/api/v1/redis/**").permitAll();
 				request.requestMatchers("/api/auth/**").anonymous();
 				request.anyRequest().authenticated();
 			})

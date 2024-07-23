@@ -59,19 +59,34 @@ public class SocialService {
 			findUser.get().updateRefreshToken(kakaoUserInfo.getRefreshToken());
 			LoginResponse response = LoginResponse.of(findUser.get(), tokenDto);
 			return ResponseEntity.ok(SuccessResponse.of(response));
-		} else {
-			User user = User.of(
-				kakaoUserInfo.getNickName(),
-				kakaoUserInfo.getEmail(),
-				null,
-				kakaoUserInfo.getRefreshToken(),
-				"ROLE_USER"
-			);
-			userRepository.save(user);
-
-			LoginResponse response = LoginResponse.of(user, tokenDto);
-			return ResponseEntity.ok(SuccessResponse.of(response));
 		}
+		// } else {
+		// 	User user = User.of(
+		// 		kakaoUserInfo.getNickName(),
+		// 		kakaoUserInfo.getEmail(),
+		// 		null,
+		// 		kakaoUserInfo.getRefreshToken(),
+		// 		"ROLE_USER"
+		// 	);
+		// 	userRepository.save(user);
+		//
+		// 	LoginResponse response = LoginResponse.of(user, tokenDto);
+		// 	return ResponseEntity.ok(SuccessResponse.of(response));
+		// }
+		// else {
+		// 	User user = User.of(
+		// 		kakaoUserInfo.getNickName(),
+		// 		kakaoUserInfo.getEmail(),
+		// 		null,
+		// 		kakaoUserInfo.getRefreshToken(),
+		// 		"ROLE_USER"
+		// 	);
+		// 	userRepository.save(user);
+		//
+		// 	LoginResponse response = LoginResponse.of(user, tokenDto);
+		// 	return ResponseEntity.ok(SuccessResponse.of(response));
+		// }
+		return null;
 	}
 
 	private SocialUserInfoDto getKakaoAccessToken(String code) {
@@ -154,16 +169,18 @@ public class SocialService {
 			return ResponseEntity.ok(
 				SuccessResponse.of(response));
 		} else {
-			User user = User.of(
-				naverUserInfo.getNickName(),
-				naverUserInfo.getEmail(),
-				null,
-				naverUserInfo.getRefreshToken(),
-				"ROLE_USER"
-			);
-			LoginResponse response = LoginResponse.of(user, tokenDto);
-			return ResponseEntity.ok(
-				SuccessResponse.of(response));
+			// 	User user = User.of(
+			// 		naverUserInfo.getNickName(),
+			// 		naverUserInfo.getEmail(),
+			// 		null,
+			// 		naverUserInfo.getRefreshToken(),
+			// 		"ROLE_USER"
+			// 	);
+			// 	LoginResponse response = LoginResponse.of(user, tokenDto);
+			// 	return ResponseEntity.ok(
+			// 		SuccessResponse.of(response));
+			// }
+			return null;
 		}
 	}
 
